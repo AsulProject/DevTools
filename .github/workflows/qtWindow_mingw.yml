@@ -4,11 +4,11 @@ on:
   push:
     branches: [ master ]
     paths: 
-      - 'DevTools/MetaDataDebugTools/**'
+      - 'MetaDataDebugTools/**'
   pull_request:
     branches: [ master ]
     paths:
-      - 'DevTools/MetaDataDebugTools/**'
+      - 'MetaDataDebugTools/**'
   workflow_dispatch:
 
 jobs:
@@ -45,21 +45,21 @@ jobs:
         Add-Content $env:GITHUB_PATH "$qtPath"
 
     - name: Configure project
-      working-directory: ./DevTools/MetaDataDebugTools
+      working-directory: ./MetaDataDebugTools
       shell: cmd
       run: |
         qmake MetaDataDebugTools.pro CONFIG+=release -spec win32-msvc
         if errorlevel 1 exit 1
 
     - name: Build project
-      working-directory: ./DevTools/MetaDataDebugTools
+      working-directory: ./MetaDataDebugTools
       shell: cmd
       run: |
         jom.exe || nmake  # jom 更快，回退到 nmake
         if errorlevel 1 exit 1
 
     - name: Bundle dependencies with windeployqt
-      working-directory: ./DevTools/MetaDataDebugTools/release
+      working-directory: ./MetaDataDebugTools/release
       shell: pwsh
       run: |
         windeployqt --compiler-runtime --no-translations --no-opengl-sw MetaDataDebugTools.exe
@@ -67,7 +67,7 @@ jobs:
         dir
 
     - name: Create ZIP package
-      working-directory: ./DevTools/MetaDataDebugTools/release
+      working-directory: ./MetaDataDebugTools/release
       shell: pwsh
       run: |
         $version = (Get-Date -Format "yyyyMMdd")
@@ -81,6 +81,6 @@ jobs:
       with:
         name: MetaDataDebugTools-Windows-Qt${{ matrix.qt-version }}
         path: |
-          ./DevTools/MetaDataDebugTools/release/MetaDataDebugTools.exe
-          ./DevTools/MetaDataDebugTools/*.zip
+          ./MetaDataDebugTools/release/MetaDataDebugTools.exe
+          ./MetaDataDebugTools/*.zip
         retention-days: 7
