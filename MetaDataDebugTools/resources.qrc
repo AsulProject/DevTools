@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/data">
         <file>data.json</file>
+        <file>data2.json</file>
     </qresource>
 </RCC>

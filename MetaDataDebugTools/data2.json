@@ -1,0 +1,114 @@
+{
+    "packageData": {
+        "id": "asul.examplePackage2",
+        "name": "i18n:package.name",
+        "description": "i18n:package.description",
+        "icon": "icon/icon.ico",
+        "version": "1.0.0",
+        "author": "Author Name",
+        "license": "MIT",
+        "dependencies": [
+            "horizon.maybe_this_package_is_required",
+            "dearmoment.maybe_this_package_is_required"
+        ]
+    },
+    "provides": {
+        "exports": [
+
+        ],
+        "signals": [
+            {
+                "entries":
+                [
+                    "examplepack_asulSlot1","examplepack_asulSlot2"
+                ],
+                "targetFileLocation": "signal_list.cfg"
+            }
+        ]
+    },
+    "subscriptions": [
+        {
+            "signal": "asul.base.ticker",
+            "args": {
+                "interval": 9
+            },
+            "commands": [
+                "asulAlias1",
+                "asulAlias2"
+            ]
+        },
+        {
+            "signal": "asul.base.playerSlotChanged.slot1",
+            "commands": [
+                "asulSlot1Bind",
+                "asulSlot1Bind2"
+            ]
+        }
+    ],
+    "configurations": [
+        {
+            "entries": [
+                {
+                    "name": "i18n:X.name",
+                    "description": "i18n:X.description",
+                    "type": "option",
+                    "default": "true",
+                    "options": [
+                        {
+                            "name": "i18n:X.enable",
+                            "value": "true"
+                        },
+                        {
+                            "name": "i18n:X.disable",
+                            "value": "false"
+                        }
+                    ]
+                },
+                {
+                    "name": "i18n:autostopmode.name",
+                    "description": "i18n:autostopmode.description",
+                    "type": "option",
+                    "default": "Mode_1",
+                    "options": [
+                        {
+                            "name": "1",
+                            "value": "Mode_1"
+                        },
+                        {
+                            "name": "2",
+                            "value": "Mode_2"
+                        },
+                        {
+                            "name": "3",
+                            "value": "Mode_3"
+                        }
+                    ]
+                }
+            ],
+            "targetFileLocation": "settings_1.cfg",
+            "version": "1.0.0"
+        },
+        {
+            "entries": [
+                {
+                    "name": "i18n:Y.name",
+                    "description": "i18n:Y.description",
+                    "type": "option",
+                    "default": "false",
+                    "options": [
+                        {
+                            "name": "i18n:Y.enable",
+                            "value": "true"
+                        },
+                        {
+                            "name": "i18n:Y.disable",
+                            "value": "false"
+                        }
+                    ]
+                }
+            ],
+            "targetFileLocation": "settings_2.cfg",
+            "version": "1.0.0"
+        }
+    ]
+}

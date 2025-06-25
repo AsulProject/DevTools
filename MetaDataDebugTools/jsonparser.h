@@ -24,9 +24,9 @@ private slots:
 
     void on_clearDebugMsgButton_clicked();
 
-    void on_Default_clicked();
-
     void on_ReadJson_clicked();
+
+    void on_FileSelectComboBox_currentTextChanged(const QString &arg1);
 
 private:
 

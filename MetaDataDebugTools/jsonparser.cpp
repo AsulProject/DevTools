@@ -300,26 +300,6 @@ void JsonParser::on_clearDebugMsgButton_clicked()
     ui->debugPlainTextEdit->clear();
 }
 
-
-
-
-
-
-
-
-void JsonParser::on_Default_clicked()
-{
-    QString dataContent="";
-    if(dataContent.isEmpty()){
-        QFile data(":/data/data.json");
-        data.open(QIODevice::ReadOnly);
-        dataContent=data.readAll();
-        data.close();
-    }
-    ui->p_JsonInputPlainTextEdit->setPlainText(dataContent);
-}
-
-
 void JsonParser::on_ReadJson_clicked()
 {
     QFile data("data.json");
@@ -361,3 +341,16 @@ void JsonParser::onSignalItemClicked(QTreeWidgetItem *item, int column) {
         }
     }
 }
+
+void JsonParser::on_FileSelectComboBox_currentTextChanged(const QString &arg1)
+{
+    if(arg1==ui->FileSelectComboBox->itemText(0)) return;
+    DBG("Use "+arg1+" (Read In Updated)");
+    QFile dataFile(":/data/"+arg1);
+    dataFile.open(QIODevice::ReadOnly);
+    ui->p_JsonInputPlainTextEdit->setPlainText(dataFile.readAll());
+    dataFile.close();
+
+    // delete &dataFile;
+}
+

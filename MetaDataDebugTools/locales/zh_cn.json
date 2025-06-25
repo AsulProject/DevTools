@@ -1,0 +1,42 @@
+[
+    {
+        "original": "i18n:X.name",
+        "translation": "X名称"
+    },
+    {
+        "original": "i18n:X.description",
+        "translation": "X描述"
+    },
+    {
+        "original": "i18n:X.enable",
+        "translation": "启用X"
+    },
+    {
+        "original": "i18n:X.disable",
+        "translation": "禁用X"
+    },
+    {
+        "original": "i18n:autostopmode.name",
+        "translation": "自动停止模式名称"
+    },
+    {
+        "original": "i18n:autostopmode.description",
+        "translation": "自动停止模式描述"
+    },
+    {
+        "original": "i18n:Y.name",
+        "translation": "Y名称"
+    },
+    {
+        "original": "i18n:Y.description",
+        "translation": "Y描述"
+    },
+    {
+        "original": "i18n:Y.enable",
+        "translation": "启用Y"
+    },
+    {
+        "original": "i18n:Y.disable",
+        "translation": "禁用Y"
+    }
+]
