@@ -1,86 +1,82 @@
-name: Build MetaDataDebugTools (Windows EXE)
+name: Build MetaDataDebugTools
 
 on:
   push:
-    branches: [ master ]
-    paths: 
-      - 'MetaDataDebugTools/**'
+    branches: [ main, master ]
   pull_request:
-    branches: [ master ]
-    paths:
-      - 'MetaDataDebugTools/**'
+    branches: [ main, master ]
   workflow_dispatch:
-
 jobs:
-  build-windows-exe:
-    runs-on: windows-latest
+  build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        qt-version: ['6.7.3']
-        architecture: [x86_64]  # 也可添加 win32_mingw
+        os: [ubuntu-22.04, windows-2022, macos-14]
+        qt_version: [6.7.3]
+        include:
+          - os: ubuntu-22.04
+            qt_target: linux
+            qt_arch: desktop
+            qt_compiler: gcc_64
+            qt_modules: qtbase qttools
+          - os: windows-2022
+            qt_target: windows
+            qt_arch: desktop
+            qt_compiler: win64_msvc2022
+            qt_modules: qtbase qttools
+          - os: macos-14
+            qt_target: mac
+            qt_arch: desktop
+            qt_compiler: clang_64
+            qt_modules: qtbase qttools
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
-    - name: Setup Qt ${{ matrix.qt-version }} (Windows)
-      uses: jurplel/install-qt-action@v3
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        version: ${{ matrix.qt-version }}
-        host: windows
-        target: desktop
-        arch: ${{ matrix.architecture }}
-        modules: qtbase qtsvg qt5compat
-        install-deps: true
-        cached: true
-        setup-python: false
+        python-version: '3.10'
 
-    - name: Add Qt to PATH
-      shell: pwsh
+    - name: Install aqt
+      run: pip install aqtinstall
+
+    - name: Install Qt ${{ matrix.qt_version }}
       run: |
-        $qtPath = "$env:QT_PATH/bin"
-        Write-Output "Adding Qt to PATH: $qtPath"
-        Add-Content $env:GITHUB_PATH "$qtPath"
+        aqt install-qt ${{ matrix.qt_target }} ${{ matrix.qt_arch }} ${{ matrix.qt_version }} ${{ matrix.qt_compiler }} -m ${{ matrix.qt_modules }}
+        echo "QT_DIR=$PWD/Qt/${{ matrix.qt_version }}/${{ matrix.qt_compiler }}" >> $GITHUB_ENV
+
+    - name: Install system dependencies (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-dev build-essential
+
+    - name: Install system dependencies (macOS)
+      if: matrix.os == 'macos-14'
+      run: |
+        brew install pkg-config
 
     - name: Configure project
-      working-directory: ./MetaDataDebugTools
       shell: cmd
+      if: matrix.os == 'windows-2022'
       run: |
-        qmake MetaDataDebugTools.pro CONFIG+=release -spec win32-msvc
-        if errorlevel 1 exit 1
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        "%QT_DIR%\bin\qmake" MetaDataDebugTools.pro -spec win32-msvc
 
-    - name: Build project
-      working-directory: ./MetaDataDebugTools
+    - name: Configure project (Unix)
+      if: matrix.os != 'windows-2022'
+      run: |
+        ${{ env.QT_DIR }}/bin/qmake MetaDataDebugTools.pro
+
+    - name: Build project (Linux/macOS)
+      if: matrix.os != 'windows-2022'
+      run: make -j4
+
+    - name: Build project (Windows)
       shell: cmd
+      if: matrix.os == 'windows-2022'
       run: |
-        jom.exe || nmake  # jom 更快，回退到 nmake
-        if errorlevel 1 exit 1
-
-    - name: Bundle dependencies with windeployqt
-      working-directory: ./MetaDataDebugTools/release
-      shell: pwsh
-      run: |
-        windeployqt --compiler-runtime --no-translations --no-opengl-sw MetaDataDebugTools.exe
-        Write-Output "Deployed dependencies:"
-        dir
-
-    - name: Create ZIP package
-      working-directory: ./MetaDataDebugTools/release
-      shell: pwsh
-      run: |
-        $version = (Get-Date -Format "yyyyMMdd")
-        $zipName = "MetaDataDebugTools_Qt${{ matrix.qt-version }}_${{ matrix.architecture }}_$version.zip"
-        Compress-Archive -Path * -DestinationPath $zipName
-        Move-Item $zipName ..\..\
-        Write-Output "Created package: $zipName"
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: MetaDataDebugTools-Windows-Qt${{ matrix.qt-version }}
-        path: |
-          ./MetaDataDebugTools/release/MetaDataDebugTools.exe
-          ./MetaDataDebugTools/*.zip
-        retention-days: 7
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        nmake
