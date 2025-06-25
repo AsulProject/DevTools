@@ -1,0 +1,10 @@
+[
+    {
+        "original": "i18n:package.name",
+        "translation": "Asul Base Package"
+    },
+    {
+        "original": "i18n:package.description",
+        "translation": "The Asul Base Package provides essential functionalities and configuration options for the Asul framework."
+    }
+]

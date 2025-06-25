@@ -53,15 +53,16 @@ private:
     QWidget * generateArea(QString name,QString detail,QStringList names,QStringList values);
     void clearLayout(QLayout *layout);
     QMap<int,QString> sumContents;
-    QStringList signalList /*Package Name + targetFileLocation*/; //All the packages (with signal provided)
-    QMap<QString /*Package Name + targetFileLocation*/ ,QStringList /*SignalList*/> signalMap;
-    QMap<QString /*Signal*/,QString /*cmds*/> signalArgu;
+
     QMap<QString,QStringModifier*> Modifiers;
 
     void onSignalItemClicked(QTreeWidgetItem *item, int column);
     void updateSignalTreeWidget();
     void registerSignal(QString sHost,QString sName,QString sArgu="");
 
+    QStringList signalList /*Package Name + targetFileLocation*/; //All the packages (with signal provided)
+    QMap<QString /*Package Name + targetFileLocation*/ ,QStringList /*SignalList*/> signalMap;
+    QMap<QString /*Signal*/,QString /*cmds*/> signalArgu;
     QList<AsulSignal> getSignalsBySignalHost(QString sHost);
     QList<AsulSignal> getAllSignal();
     AsulSignal getSignalBySignalName(QString sName);

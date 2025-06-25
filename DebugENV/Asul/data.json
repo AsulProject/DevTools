@@ -1,0 +1,29 @@
+{
+    "packageData": {
+        "id": "asul.base.package",
+        "name": "i18n:package.name",
+        "description": "i18n:package.description",
+        "icon": "icon/icon.png",
+        "version": "1.0.0",
+        "author": "Asul Team",
+        "license": "MIT"
+    },
+    "provides": {
+        "signals": [
+            {
+                "entries":
+                [
+                    "asul.base.playerSlotChanged.slot1","asul.base.playerSlotChanged.slot2"
+                ],
+                "targetFileLocation": "AsulBaseSignalSlot.cfg"
+            },
+            {
+                "entries":
+                [
+                    "asul.base.playerSlotChanged.slot3"
+                ],
+                "targetFileLocation": "AsulBaseSignalAlias.cfg"
+            }
+        ]
+    }
+}

@@ -9,9 +9,10 @@
 #include <QDir>
 #include <QFile>
 #include <QDirIterator>
+
 #define DBG(x) ui->debugPlainTextEdit->appendPlainText(x);
 #define nowLocalesName ui->languageChooseComboBox->currentText()
-
+#define i18n(x) Modifiers[nowLocalesName]->get(x)
 #include "QStringModifier.h"
 
 #define ASULBASE "Asul/Signal_Base.cfg"
@@ -102,9 +103,9 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
 
 
     //packageData
-    QString labelInfo=" Name: "+packageData["name"].toString()
+    QString labelInfo=" Name: "+i18n(packageData["name"].toString())
                         +"       Version: "+packageData["version"].toString()
-                        +"       Detail: "+packageData["description"].toString()
+                        +"       Detail: "+i18n(packageData["description"].toString())
                         +"       Icon: "+packageData["icon"].toString()
                         +"       Author: "+packageData["author"].toString()
                         +"       license: "+packageData["license"].toString()
