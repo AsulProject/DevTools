@@ -52,16 +52,6 @@
        <string>Choose Language (Need &quot;Locales Dir Existed in {PWD}&quot;)</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>zh_cn</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>en_us</string>
-      </property>
-     </item>
     </widget>
     <widget class="QPushButton" name="ReadJson">
      <property name="geometry">

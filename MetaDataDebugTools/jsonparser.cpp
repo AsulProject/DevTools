@@ -8,7 +8,10 @@
 #include <QComboBox>
 #include <QDir>
 #include <QFile>
+#include <QDirIterator>
 #define DBG(x) ui->debugPlainTextEdit->appendPlainText(x);
+#define nowLocalesName ui->languageChooseComboBox->currentText()
+
 #include "QStringModifier.h"
 
 #define ASULBASE "Asul/Signal_Base.cfg"
@@ -27,8 +30,45 @@ JsonParser::JsonParser(QWidget *parent)
 
     registerSignal(ASULBASE,"asul.base.Slot1","AliasBase1;AliasBase2");
     registerSignal(ASULBASE,"asul.base.playerSlotChanged.slot1","slot1;slot2");
+    label=nowLocalesName;
 
 
+    //collect i18n list
+    QString localesDirPath="locales";
+    QDir localesDir(localesDirPath);
+
+
+    if(localesDir.exists()){
+        DBG("[Dir] Locales Dir Exist! Collecting Map for i18n...");
+        //collect zh_cn.json
+        QStringList jsonFiles = localesDir.entryList(QStringList() << "*.json", QDir::Files);
+        for (const QString& file : jsonFiles) {
+            QString filePath = localesDir.filePath(file);
+            QFile jsonFile(filePath);
+            QStringModifier *Modifier=new QStringModifier(this);
+            QMap<QString,QString> modifiermap;
+            modifiermap.clear();
+            ui->languageChooseComboBox->addItem(jsonFile.fileName());
+            if(jsonFile.open(QIODevice::ReadOnly)){
+                auto Array=QJsonDocument::fromJson(jsonFile.readAll()).array();
+
+                for(const auto& transValue:Array){
+                    auto transObj=transValue.toObject();
+                    modifiermap.insert(transObj["original"].toString(),transObj["translation"].toString());
+                }
+                jsonFile.close();
+            }
+            Modifier->installModifier(modifiermap);
+            Modifiers[jsonFile.fileName()]=Modifier;
+            DBG("[Translation] Add "+jsonFile.fileName());
+        }
+    }else{ DBG("[Dir] Locales Dir Not Exist!"); }
+    qDebug()<<"[Map] "<<Modifiers;
+
+    Modifiers[label]=new QStringModifier(this);
+    // QStringModifier * selectModifier=new QStringModifier(this);
+
+    connect(ui->languageChooseComboBox,&QComboBox::currentIndexChanged,[this](){ui->p_GeneratedPushButton->click();});
     connect(ui->signalTreeWidget, &QTreeWidget::itemClicked, this, &JsonParser::onSignalItemClicked);
     updateSignalTreeWidget();
 }
@@ -46,56 +86,9 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
     ui->p_providePlainTextEdit->clear();
     ui->p_CFGsPlainTextEdit->clear();
     ui->p_SubScriptionPlainTextEdit->clear();
+
     sumContents.clear();
     int sector=0;
-
-    //collect i18n list
-    QString localesDirPath="locales";
-    QDir localesDir(localesDirPath);
-    QStringModifier *zh_cnModifier=new QStringModifier(this);
-    QStringModifier *en_usModifier=new QStringModifier(this);
-    if(localesDir.exists()){
-        DBG("[Dir] Locales Dir Exist! Collecting Map for i18n...");
-        //collect zh_cn.json
-        QFile zh_cnJson("locales/zh_cn.json");
-        if(zh_cnJson.open(QIODevice::ReadOnly)){
-            DBG("[File] zh_cn.json Found! generating Map for i18n -> zh_cn");
-            auto rootObj= QJsonDocument::fromJson(QString(zh_cnJson.readAll()).toUtf8()).array();
-            QMap<QString,QString>modifier;
-            for(const auto& i18nMap: rootObj){
-                auto i18n=i18nMap.toObject();
-                modifier[i18n["original"].toString()]=i18n["translation"].toString();
-            }
-            zh_cnModifier->installModifier(modifier);
-            zh_cnJson.close();
-        }else{ DBG("[File] zh_cn.json Not Exist! : " +zh_cnJson.errorString()); }
-
-        QFile en_usJson("locales/en_us.json");
-        if(en_usJson.open(QIODevice::ReadOnly)){
-            DBG("[File] en_us.json Found! generating Map for i18n -> en_us");
-            auto rootObj= QJsonDocument::fromJson(QString(en_usJson.readAll()).toUtf8()).array();
-            QMap<QString,QString>modifier;
-            for(const auto& i18nMap: rootObj){
-                auto i18n=i18nMap.toObject();
-                modifier[i18n["original"].toString()]=i18n["translation"].toString();
-            }
-            en_usModifier->installModifier(modifier);
-            en_usJson.close();
-        }else{ DBG("[File] en_us.json Not Exist! : "+en_usJson.errorString()); }
-    }else{ DBG("[Dir] Locales Dir Not Exist!"); }
-
-    QStringModifier * selectModifier;
-    if(ui->languageChooseComboBox->currentIndex()==0){
-        selectModifier=new QStringModifier(this);
-        DBG("Do not enable i18n Func");
-    }else if(ui->languageChooseComboBox->currentIndex()==1){
-        selectModifier=zh_cnModifier;
-        DBG("Use zh_cn i18n Func");
-    }else if(ui->languageChooseComboBox->currentIndex()==2){
-        selectModifier=en_usModifier;
-        DBG("Use zh_cn i18n Func");
-    }
-
 
 
     QString originContent=ui->p_JsonInputPlainTextEdit->toPlainText();
@@ -131,8 +124,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
 
     for(const auto& exportsValue: exports){
         auto exportsObj=exportsValue.toObject();
-        QString name=selectModifier->get(exportsObj["name"].toString());
-        QString description=selectModifier->get(exportsObj["description"].toString());
+        QString name=Modifiers[nowLocalesName]->get(exportsObj["name"].toString());
+        QString description=Modifiers[nowLocalesName]->get(exportsObj["description"].toString());
         bool continuous=exportsObj["continuous"].toBool();
         QString command=exportsObj["command"].toString();
 
@@ -204,8 +197,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
 
         for(const auto& entryValue : entries){
             auto entryObj=entryValue.toObject();
-            QString name=selectModifier->get(entryObj["name"].toString());
-            QString description=selectModifier->get(entryObj["description"].toString());
+            QString name=Modifiers[nowLocalesName]->get(entryObj["name"].toString());
+            QString description=Modifiers[nowLocalesName]->get(entryObj["description"].toString());
             QString type=entryObj["type"].toString();
             QString _default=entryObj["default"].toString();
             auto options=entryObj["options"].toArray();
@@ -214,8 +207,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
             QStringList names,values;
             for(const auto& optionValue : options){
                 auto optObj=optionValue.toObject();
-                QString optName=selectModifier->get(optObj["name"].toString());
-                QString optValue=selectModifier->get(optObj["value"].toString());
+                QString optName=Modifiers[nowLocalesName]->get(optObj["name"].toString());
+                QString optValue=Modifiers[nowLocalesName]->get(optObj["value"].toString());
                 names.append(optName);
                 values.append(optValue);
             }
@@ -224,7 +217,10 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
                 QHBoxLayout * HLayout=new QHBoxLayout(container);
                 QVBoxLayout * textVLayout=new QVBoxLayout();
                 textVLayout->addWidget(new QLabel(name,container));
-                textVLayout->addWidget(new QLineEdit(description,this));
+
+                QLineEdit *detailDisplay=new QLineEdit(description,this);
+                detailDisplay->setReadOnly(true);
+                textVLayout->addWidget(detailDisplay);
                 QComboBox * selectBox=new QComboBox(container);
                 selectBox->addItems(names);
                 selectBox->setCurrentIndex(values.indexOf(_default));
@@ -332,12 +328,17 @@ void JsonParser::updateSignalTreeWidget() {
     ui->signalTreeWidget->expandAll();
 }
 
-void JsonParser::registerSignal(QString Host, QString sName, QString cmds)
+void JsonParser::registerSignal(QString sHost, QString sName, QString sArgu)
 {
-    if(!signalList.contains(Host))
-        signalList.append(Host);
-    signalMap[Host].append(QStringList{sName});
-    signalArgu[sName].append(QString(cmds));
+    if(!signalList.contains(sHost))
+        signalList.append(sHost);
+    else DBG(sHost+" Already Exist! Check MetaData !!!");
+    if(!signalMap[sHost].contains(sName))
+        signalMap[sHost].append(QStringList{sName});
+    else DBG(sName+" Already Exist! Check MetaData !!!");
+    if(!signalArgu[sName].contains(QString(sArgu)))
+        signalArgu[sName].append(QString(sArgu));
+
 }
 
 QList<JsonParser::AsulSignal> JsonParser::getAllSignal()

@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QString>
 
+#include "QStringModifier.h"
 #include "qtreewidget.h"
 #include "stdafx.h"
 QT_BEGIN_NAMESPACE
@@ -47,7 +48,7 @@ private:
         AsulSignal();
     };
 
-
+    QString label;
     QString getRandomId();
     QWidget * generateArea(QString name,QString detail,QStringList names,QStringList values);
     void clearLayout(QLayout *layout);
@@ -55,11 +56,11 @@ private:
     QStringList signalList /*Package Name + targetFileLocation*/; //All the packages (with signal provided)
     QMap<QString /*Package Name + targetFileLocation*/ ,QStringList /*SignalList*/> signalMap;
     QMap<QString /*Signal*/,QString /*cmds*/> signalArgu;
-
+    QMap<QString,QStringModifier*> Modifiers;
 
     void onSignalItemClicked(QTreeWidgetItem *item, int column);
     void updateSignalTreeWidget();
-    void registerSignal(QString Host,QString sName,QString cmds="");
+    void registerSignal(QString sHost,QString sName,QString sArgu="");
 
     QList<AsulSignal> getSignalsBySignalHost(QString sHost);
     QList<AsulSignal> getAllSignal();
