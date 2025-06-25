@@ -19,8 +19,8 @@ JsonParser::JsonParser(QWidget *parent)
     ui->setupUi(this);
 
     signalList.append("Asul/Signal_Base.cfg");
-    signalMap["Asul/Signal_Base.cfg"]=QStringList{"asul.base.playerSlotChanged.slot1"};
-    // signalArgu["asul.base.ticker"]="AliasBase1;AliasBase2;";
+    signalMap["Asul/Signal_Base.cfg"]=QStringList{"asul.base.Slot1","asul.base.playerSlotChanged.slot1"};
+    signalArgu["asul.base.Slot1"]="AliasBase1;AliasBase2;";
     signalArgu["asul.base.playerSlotChanged.slot1"]="slot1;slot2;";
 
     connect(ui->signalTreeWidget, &QTreeWidget::itemClicked, this, &JsonParser::onSignalItemClicked);
