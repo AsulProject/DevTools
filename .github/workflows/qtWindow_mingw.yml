@@ -3,12 +3,12 @@ on:
   push:
     paths:
       - 'MetaDataDebugTools/JsonParser.pro'
-      - 'src/**'
+      - 'MetaDataDebugTools/**'
       - '.github/workflows/qtWindows-mingw.yml'
   pull_request:
     paths:
       - 'MetaDataDebugTools/JsonParser.pro'
-      - 'src/**'
+      - 'MetaDataDebugTools/**'
       - '.github/workflows/qtWindows-mingw.yml' 
 jobs:
   build:
