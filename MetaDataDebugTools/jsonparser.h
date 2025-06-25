@@ -40,5 +40,6 @@ private:
     QMap<QString /*Signal*/,QString /*cmds*/> signalArgu;
     void onSignalItemClicked(QTreeWidgetItem *item, int column);
     void updateSignalTreeWidget();
+    void registerSignal(QString Host,QString signalName,QString cmds="");
 };
 #endif // JSONPARSER_H

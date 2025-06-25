@@ -11,6 +11,7 @@
 #define DBG(x) ui->debugPlainTextEdit->appendPlainText(x);
 #include "QStringModifier.h"
 
+#define ASULBASE "Asul/Signal_Base.cfg"
 
 JsonParser::JsonParser(QWidget *parent)
     : QMainWindow(parent)
@@ -18,10 +19,15 @@ JsonParser::JsonParser(QWidget *parent)
 {
     ui->setupUi(this);
 
-    signalList.append("Asul/Signal_Base.cfg");
-    signalMap["Asul/Signal_Base.cfg"]=QStringList{"asul.base.Slot1","asul.base.playerSlotChanged.slot1"};
-    signalArgu["asul.base.Slot1"]="AliasBase1;AliasBase2;";
-    signalArgu["asul.base.playerSlotChanged.slot1"]="slot1;slot2;";
+    // signalList.append("Asul/Signal_Base.cfg");
+    // signalMap["Asul/Signal_Base.cfg"]=QStringList{"asul.base.Slot1","asul.base.playerSlotChanged.slot1"};
+    // signalArgu["asul.base.Slot1"]="AliasBase1;AliasBase2;";
+    // signalArgu["asul.base.playerSlotChanged.slot1"]="slot1;slot2;";
+
+
+    registerSignal(ASULBASE,"asul.base.Slot1","AliasBase1;AliasBase2");
+    registerSignal(ASULBASE,"asul.base.playerSlotChanged.slot1","slot1;slot2");
+
 
     connect(ui->signalTreeWidget, &QTreeWidget::itemClicked, this, &JsonParser::onSignalItemClicked);
     updateSignalTreeWidget();
@@ -324,6 +330,15 @@ void JsonParser::updateSignalTreeWidget() {
     }
     ui->signalTreeWidget->expandAll();
 }
+
+void JsonParser::registerSignal(QString Host, QString signalName, QString cmds)
+{
+    if(!signalList.contains(Host))
+        signalList.append(Host);
+    signalMap[Host].append(QStringList{signalName});
+    signalArgu[signalName].append(QString(cmds));
+}
+
 
 void JsonParser::onSignalItemClicked(QTreeWidgetItem *item, int column) {
     if(item->childCount() == 0) { // 子节点
