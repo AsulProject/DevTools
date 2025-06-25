@@ -2,6 +2,9 @@
 #define JSONPARSER_H
 
 #include <QMainWindow>
+#include <QMap>
+#include <QString>
+
 #include "qtreewidget.h"
 #include "stdafx.h"
 QT_BEGIN_NAMESPACE
@@ -31,6 +34,20 @@ private slots:
 private:
 
     Ui::JsonParser *ui;
+
+    struct AsulSignal{
+        QString SignalHost;
+        QString SignalName;
+        QString SignalArgu;
+        AsulSignal(QString Host,QString Name,QString Argu){
+            this->SignalHost=Host;
+            this->SignalName=Name;
+            this->SignalArgu=Argu;
+        }
+        AsulSignal();
+    };
+
+
     QString getRandomId();
     QWidget * generateArea(QString name,QString detail,QStringList names,QStringList values);
     void clearLayout(QLayout *layout);
@@ -38,8 +55,17 @@ private:
     QStringList signalList /*Package Name + targetFileLocation*/; //All the packages (with signal provided)
     QMap<QString /*Package Name + targetFileLocation*/ ,QStringList /*SignalList*/> signalMap;
     QMap<QString /*Signal*/,QString /*cmds*/> signalArgu;
+
+
     void onSignalItemClicked(QTreeWidgetItem *item, int column);
     void updateSignalTreeWidget();
-    void registerSignal(QString Host,QString signalName,QString cmds="");
+    void registerSignal(QString Host,QString sName,QString cmds="");
+
+    QList<AsulSignal> getSignalsBySignalHost(QString sHost);
+    QList<AsulSignal> getAllSignal();
+    AsulSignal getSignalBySignalName(QString sName);
+    AsulSignal getSignalByArgus(QString sArgu);
+
+
 };
 #endif // JSONPARSER_H

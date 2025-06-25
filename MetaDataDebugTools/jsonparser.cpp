@@ -154,10 +154,11 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
         for(const auto& entry:entriesArray){
             QString content="@"+targetFileLocation+"_"+entry.toString();
             ui->p_providePlainTextEdit->appendPlainText("[Signals] "+content);
-            if(!signalMap[signalRegisterName].contains(entry.toString()))
-                signalMap[signalRegisterName].append(QStringList{entry.toString()});
-            if(!signalArgu.contains(entry.toString()))
-                signalArgu[entry.toString()]="";
+            registerSignal(signalRegisterName,entry.toString());
+            // if(!signalMap[signalRegisterName].contains(entry.toString()))
+            //     signalMap[signalRegisterName].append(QStringList{entry.toString()});
+            // if(!signalArgu.contains(entry.toString()))
+            //     signalArgu[entry.toString()]="";
             DBG("Registered Map: "+signalRegisterName+" : "+entry.toString());
         }
 
@@ -331,16 +332,68 @@ void JsonParser::updateSignalTreeWidget() {
     ui->signalTreeWidget->expandAll();
 }
 
-void JsonParser::registerSignal(QString Host, QString signalName, QString cmds)
+void JsonParser::registerSignal(QString Host, QString sName, QString cmds)
 {
     if(!signalList.contains(Host))
         signalList.append(Host);
-    signalMap[Host].append(QStringList{signalName});
-    signalArgu[signalName].append(QString(cmds));
+    signalMap[Host].append(QStringList{sName});
+    signalArgu[sName].append(QString(cmds));
+}
+
+QList<JsonParser::AsulSignal> JsonParser::getAllSignal()
+{
+    QList<JsonParser::AsulSignal>container;
+    foreach(const auto& sHost,signalList){
+        QStringList sMap=signalMap[sHost];
+        foreach(const auto& sName,sMap){
+            QString sArgu=signalArgu[sName];
+            container.append(AsulSignal(sHost,sName,sArgu));
+        }
+    }
+    return container;
+}
+
+JsonParser::AsulSignal JsonParser::getSignalByArgus(QString sArgu)
+{
+
+    QMap<QString, QString>::const_iterator sArguIter;
+    QString sName="",sHost="";
+    for(sArguIter = signalArgu.constBegin(); sArguIter != signalArgu.constEnd(); ++sArguIter) {
+        if(sArguIter.value() == sArgu) sName = sArguIter.key();
+    }
+    if(!sName.isEmpty()){
+        QMap<QString,QStringList>::const_iterator sHostIter;
+        for(sHostIter = signalMap.constBegin();sHostIter != signalMap.constEnd(); ++sHostIter){
+            if(sHostIter.value().contains(sName)) sHost = sHostIter.key();
+        }
+    }
+    return AsulSignal(sHost,sName,sArgu);
+}
+
+QList<JsonParser::AsulSignal> JsonParser::getSignalsBySignalHost(QString sHost)
+{
+    QList<JsonParser::AsulSignal>container;
+    QStringList sMap=signalMap[sHost];
+    foreach(const auto& sName,sMap){
+        QString sArgu=signalArgu[sName];
+        container.append(AsulSignal(sHost,sName,sArgu));
+    }
+    return container;
+}
+
+JsonParser::AsulSignal JsonParser::getSignalBySignalName(QString sName)
+{
+    QString sArgu=signalArgu[sName];
+    QString sHost="";
+    foreach(const auto& sHosts,signalList){
+        if(signalMap[sHosts].contains(sName)) sHost=sHosts;
+    }
+    return AsulSignal(sHost,sName,sArgu);
 }
 
 
 void JsonParser::onSignalItemClicked(QTreeWidgetItem *item, int column) {
+    Q_UNUSED(column);
     if(item->childCount() == 0) { // 子节点
         QString signalName = item->data(0, Qt::UserRole).toString();
         if(signalArgu.contains(signalName)) {
