@@ -1,0 +1,42 @@
+[
+    {
+        "original": "i18n:X.name",
+        "translation": "XName"
+    },
+    {
+        "original": "i18n:X.description",
+        "translation": "XDescription"
+    },
+    {
+        "original": "i18n:X.enable",
+        "translation": "Enable X"
+    },
+    {
+        "original": "i18n:X.disable",
+        "translation": "Disable X"
+    },
+    {
+        "original": "i18n:autostopmode.name",
+        "translation": "Auto Stop Mode Name"
+    },
+    {
+        "original": "i18n:autostopmode.description",
+        "translation": "Auto Stop Mode Description"
+    },
+    {
+        "original": "i18n:Y.name",
+        "translation": "YName"
+    },
+    {
+        "original": "i18n:Y.description",
+        "translation": "YDescription"
+    },
+    {
+        "original": "i18n:Y.enable",
+        "translation": "Enable Y"
+    },
+    {
+        "original": "i18n:Y.disable",
+        "translation": "Disable Y"
+    }
+]

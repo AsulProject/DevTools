@@ -6,7 +6,11 @@
         "icon": "icon/icon.ico",
         "version": "1.0.0",
         "author": "Asul Team",
-        "license": "MIT"
+        "license": "MIT",
+        "dependencies" : [
+            "asul.base.package@1.0.0",
+            "asul.package1@1.0.0"
+        ]
     },
     "provides": {
         "exports": [

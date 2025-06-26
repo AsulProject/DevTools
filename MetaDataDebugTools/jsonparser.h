@@ -58,6 +58,7 @@ private:
 
     void onSignalItemClicked(QTreeWidgetItem *item, int column);
     void updateSignalTreeWidget();
+
     void registerSignal(QString sHost,QString sName,QString sArgu="");
 
     QStringList signalList /*Package Name + targetFileLocation*/; //All the packages (with signal provided)

@@ -125,8 +125,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
 
     for(const auto& exportsValue: exports){
         auto exportsObj=exportsValue.toObject();
-        QString name=Modifiers[nowLocalesName]->get(exportsObj["name"].toString());
-        QString description=Modifiers[nowLocalesName]->get(exportsObj["description"].toString());
+        QString name=i18n(exportsObj["name"].toString());
+        QString description=i18n(exportsObj["description"].toString());
         bool continuous=exportsObj["continuous"].toBool();
         QString command=exportsObj["command"].toString();
 
@@ -198,8 +198,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
 
         for(const auto& entryValue : entries){
             auto entryObj=entryValue.toObject();
-            QString name=Modifiers[nowLocalesName]->get(entryObj["name"].toString());
-            QString description=Modifiers[nowLocalesName]->get(entryObj["description"].toString());
+            QString name=i18n(entryObj["name"].toString());
+            QString description=i18n(entryObj["description"].toString());
             QString type=entryObj["type"].toString();
             QString _default=entryObj["default"].toString();
             auto options=entryObj["options"].toArray();
@@ -208,8 +208,8 @@ void JsonParser::on_p_GeneratedPushButton_clicked()
             QStringList names,values;
             for(const auto& optionValue : options){
                 auto optObj=optionValue.toObject();
-                QString optName=Modifiers[nowLocalesName]->get(optObj["name"].toString());
-                QString optValue=Modifiers[nowLocalesName]->get(optObj["value"].toString());
+                QString optName=i18n(optObj["name"].toString());
+                QString optValue=i18n(optObj["value"].toString());
                 names.append(optName);
                 values.append(optValue);
             }
@@ -319,7 +319,7 @@ void JsonParser::updateSignalTreeWidget() {
     for(iter = signalMap.constBegin(); iter != signalMap.constEnd(); ++iter) {
         QTreeWidgetItem *parentItem = new QTreeWidgetItem(ui->signalTreeWidget);
         parentItem->setText(0, iter.key());
-        
+
         foreach(const QString &signal, iter.value()) {
             QTreeWidgetItem *childItem = new QTreeWidgetItem(parentItem);
             childItem->setText(0, signal);
