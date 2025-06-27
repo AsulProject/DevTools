@@ -6,17 +6,20 @@
 #include <QFile>
 
 class asulPackage;
+class asulSubscription;
 
 class asulSignal
 {
     asulPackage* host;
     QString id;
     QFile targetFile;
-    QVector<QString> subscriberList;
+    QVector<asulSubscription*> subscriberList;
 
 
 public:
-    asulSignal(asulPackage* H,const QString& I);
+    asulSignal(asulPackage* H,const QString& I,const QString& T);
+
+    void addSubscriber(asulSubscription* S);
 
     asulPackage* getHost()const;
     QString getID()const;

@@ -1,16 +1,26 @@
 #ifndef ASULPACKAGEMANAGER_H
 #define ASULPACKAGEMANAGER_H
 
+#include <QVector>
 #include "asulPackage.h"
 #include "asulSignal.h"
-#include <QVector>
+#include "asulSubscription.h"
 
 class asulPackageManager
 {
-    QVector<asulPackage> packgeList;
-    QVector<asulSignal> signalList;
+    QVector<asulPackage*> packageList;
+    QVector<asulSignal*> signalList;
+    QVector<asulSubscription*> subscriptionList;
 public:
     asulPackageManager();
+
+    void addPackage(asulPackage* P);
+    void addSignal(asulSignal* S);
+    void addSubscription(asulSubscription* S);
+
+    const auto& getPackageList()const;
+    const auto& getSignalList()const;
+    const auto& getSubscriptionList()const;
 };
 
 #endif // ASULPACKAGEMANAGER_H

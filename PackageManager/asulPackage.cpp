@@ -1,4 +1,5 @@
 #include "asulPackage.h"
+#include "asulSubscription.h"
 #include <QStringList>
 
 
@@ -18,43 +19,22 @@ asulPackage::asulPackage(const QString &IaV)
 
 
 
-// logic
+// adds
 
-void asulPackage::add_dependency(asulPackage *D)
+void asulPackage::addDependency(asulPackage *D)
 {
-    this->dependencyList.push_back(D);
+    this->dependencyList.append(D);
 }
 
-void asulPackage::add_signal(asulSignal *S)
+void asulPackage::addSignal(asulSignal *S)
 {
-    this->signalList.push_back(S);
+    this->signalList.append(S);
 }
 
-void asulPackage::add_subscription(asulSignal *S)
+void asulPackage::addSubscription(asulSubscription *S)
 {
-    this->subscriptionList.push_back(S);
+    this->subscriptionList.append(S);
 }
-
-
-
-
-
-// operator
-
-
-
-
-
-asulPackage &asulPackage::operator =(const QString &Iav)
-{
-    return (*this)=asulPackage(Iav);
-}
-
-
-
-
-
-
 
 
 

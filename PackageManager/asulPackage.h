@@ -3,8 +3,10 @@
 
 #include <QString>
 #include <QVector>
+#include <QList>
 
-#include "asulSignal.h"
+class asulSignal;
+class asulSubscription;
 
 
 class asulPackage
@@ -14,17 +16,15 @@ class asulPackage
     QVector<asulPackage*> dependencyList;
 
     QVector<asulSignal*> signalList;
-    QVector<asulSignal*> subscriptionList;
+    QVector<asulSubscription*> subscriptionList;
 
 public:
     asulPackage(const QString& I,const QString& V);
     asulPackage(const QString& IaV);
 
-    void add_dependency(asulPackage* D);
-    void add_signal(asulSignal* S);
-    void add_subscription(asulSignal* S);
-
-    asulPackage& operator = (const QString& Iav);
+    void addDependency(asulPackage* D);
+    void addSignal(asulSignal* S);
+    void addSubscription(asulSubscription* S);
 
     QString getID()const;
     QString getVersion()const;

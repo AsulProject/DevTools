@@ -13,6 +13,7 @@ SOURCES += \
     asulPackage.cpp \
     asulPackageManager.cpp \
     asulSignal.cpp \
+    asulSubscription.cpp \
     main.cpp \
     PackageManager.cpp
 
@@ -22,6 +23,7 @@ HEADERS += \
     asulPackage.h \
     asulPackageManager.h \
     asulSignal.h \
+    asulSubscription.h \
     stdafx.h
 
 FORMS += \
