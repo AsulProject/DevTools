@@ -13,10 +13,13 @@ class asulPackageManager
     QVector<asulSubscription*> subscriptionList;
 public:
     asulPackageManager();
+    ~asulPackageManager();
 
     void addPackage(asulPackage* P);
     void addSignal(asulSignal* S);
     void addSubscription(asulSubscription* S);
+
+    void clear();
 
     const auto& getPackageList()const;
     const auto& getSignalList()const;
