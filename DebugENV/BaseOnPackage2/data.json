@@ -18,27 +18,27 @@
                 "name": "i18n:A.name",
                 "description": "i18n:A.description",
                 "continuous": true,
-                "command": "package2_command_1"
+                "command": "package3_command_1"
             },
             {
                 "name": "i18n:B.name",
                 "description": "i18n:B.description",
                 "continuous": false,
-                "command": "package2_command_2"
+                "command": "package3_command_2"
             }
         ],
         "signals": [
             {
                 "entries":
                 [
-                    "package2Signal1","package2Signal2"
+                    "package3Signal1","package3Signal2"
                 ],
                 "targetFileLocation": "signal_list.cfg"
             },
             {
                 "entries":
                 [
-                    "package2Signal3"
+                    "package3Signal3"
                 ],
                 "targetFileLocation": "signal_list_another.cfg"
             }
@@ -51,15 +51,15 @@
                 "interval": 9
             },
             "commands": [
-                "package2Alias1",
-                "package2Alias2"
+                "package3Alias1",
+                "package3Alias2"
             ]
         },
         {
             "signal": "asul.base.playerSlotChanged.slot1",
             "commands": [
-                "package2Alias3",
-                "package2Alias4"
+                "package3Alias3",
+                "package3Alias4"
             ]
         }
     ],
