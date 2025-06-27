@@ -10,12 +10,18 @@ CONFIG += c++17
 
 SOURCES += \
     QStringModifier.cpp \
+    asulPackage.cpp \
+    asulPackageManager.cpp \
+    asulSignal.cpp \
     main.cpp \
     PackageManager.cpp
 
 HEADERS += \
     PackageManager.h \
     QStringModifier.h \
+    asulPackage.h \
+    asulPackageManager.h \
+    asulSignal.h \
     stdafx.h
 
 FORMS += \

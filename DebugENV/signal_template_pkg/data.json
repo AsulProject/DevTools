@@ -1,0 +1,38 @@
+{
+    "packageData": {
+        "id": "asul.signal_template_pkg",
+        "name": "i18n:package.name",
+        "description": "i18n:package.description",
+        "icon": "icon/icon.ico",
+        "version": "1.0.0",
+        "author": "Asul Team",
+        "license": "MIT",
+        "dependencies" : [
+            "asul.base.package@1.0.0"
+        ]
+    },
+    "provides": {
+        "exports": [],
+        "signals": [
+            {
+                "entries":
+                [
+                    "signal_1"
+                ],
+                "targetFileLocation": "signal_list.cfg"
+            }
+        ]
+    },
+    "subscriptions": [
+        {
+            "signal": "asul.base.ticker",
+            "args": {
+                "interval": 9
+            },
+            "commands": [
+                "none"
+            ]
+        }
+    ],
+    "configurations": []
+}
