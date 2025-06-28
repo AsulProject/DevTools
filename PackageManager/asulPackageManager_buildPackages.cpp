@@ -26,7 +26,7 @@ void checkCircularDependency(int packageCount, const std::vector<std::vector<int
                 // find a circular dependency
 
                 QList<QString> path;
-                for (const auto& pkg : stack) path.append(index_to_IaV[pkg]); // make index(int) -> IaV(QString) for exception
+                for (const auto& index : stack) path.append(index_to_IaV[index]); // make index(int) -> IaV(QString) for exception
 
                 throw asulException::circularDependencyError(path);
             }
@@ -112,6 +112,7 @@ void asulPackageManager::buildPackages() {
     for (int index = 0; index < packageCount; index++) { // generate a map between package(QString::IaV) and index(int)
         IaV_to_index[index_to_IaV[index]] = index;
     }
+
     // 2. Build the dependency graph
 
     if (packageCount == 0) {
@@ -135,7 +136,7 @@ void asulPackageManager::buildPackages() {
     // if there is one, this function will throw an exception (asulException::circularDenpendencyDetected)
     checkCircularDependency(packageCount, edge, index_to_IaV);
 
-    // 4. Do topo-sort to generate a correct order of building packages
+    // 4. Do topo-sort to generate a correct order of package building
     std::vector<int> order = generateBuildingOrder(packageCount, edge);
 
     // 5. load packages
