@@ -85,32 +85,39 @@ std::vector<int> generateBuildingOrder(int packageCount, const std::vector<std::
 }
 
 void asulPackageManager::buildPackages() {
-    // 0. init package infomation
+    // 1. init package infomation
 
-    const auto& index_to_IaV = this->packageList.keys();
-    const auto& index_to_ptr = this->packageList.values();
+    QList<QString> index_to_IaV;
+    QList<asulPackage*> index_to_ptr;
+
+    for (auto it = this->packageList.begin(); it != this->packageList.end(); it++) {
+        // it = [ IaV(QString) , pkg(asulPackage*) ]
+
+        // clear signal's subscriber
+        for (const auto& signal : it.value()->getSigalList()) {
+            signal->clearSubscriber();
+        }
+
+        // skip disabled package
+        if (this->getPackageStatus(it.key()) == asulPackageManager::PACKAGE_STATE::DISABLE)
+            continue;
+
+        // collect enabled package
+        index_to_IaV.append(it.key());
+        index_to_ptr.append(it.value());
+    }
     int packageCount = index_to_IaV.size();
 
     QMap<QString /* IaV */, int /* index */> IaV_to_index;
     for (int index = 0; index < packageCount; index++) { // generate a map between package(QString::IaV) and index(int)
         IaV_to_index[index_to_IaV[index]] = index;
     }
+    // 2. Build the dependency graph
 
     if (packageCount == 0) {
-        // there is no package in this packageManager. return and do nothing.
+        // there is no enabled package in this packageManager. return and do nothing.
         return;
     }
-
-    // 1. clear previous build result
-    // clear signal's subscriber
-
-    for (const auto& pkg_ptr : index_to_ptr) {
-        for (const auto& signal : pkg_ptr->getSigalList()) {
-            signal->clearSubscriber();
-        }
-    }
-
-    // 2. Build the dependency graph
 
     std::vector<std::vector<int>> edge;             // edges
     edge.resize(packageCount, std::vector<int>(0)); // resize to fit the graph
