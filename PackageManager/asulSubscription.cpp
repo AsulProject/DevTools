@@ -28,7 +28,7 @@ void asulSubscription::addArg(const QString &key, const QString &value)
 {
     // check if this arg exsits
     if(this->argList.contains(key)==false){
-        throw asulException(QString("arg {%1,%2} already exsits.").arg(key).arg(value));
+        throw asulException(QString("arg {%1,%2} already exsits.").arg(key,value));
     }
 
     // add it to argList

@@ -17,7 +17,7 @@ class asulSignal
 
 
 public:
-    asulSignal(asulPackage* H,const QString& I,const QString& T);
+    explicit asulSignal(asulPackage* H,const QString& I,const QString& T);
 
     void addSubscriber(asulSubscription* S);
 

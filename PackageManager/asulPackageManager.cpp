@@ -30,8 +30,9 @@ void asulPackageManager::setPackageStatus(const QString &IaV, PACKAGE_STATE stat
 void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status)
 {
     // set status for all packages
-    for(const auto& key:this->packageStatus.keys()){
-        this->packageStatus[key]=status;
+    const auto& packages=this->packageList.keys();
+    for(const auto& IaV:packages){
+        this->packageStatus[IaV]=status;
     }
 }
 
@@ -40,10 +41,23 @@ void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status)
 
 
 
+
+
+
+bool asulPackageManager::contain(const QString &IaV) const
+{
+    return this->packageList.contains(IaV);
+}
+
 void asulPackageManager::clear()
 {
-    for(auto P:this->packageList)   delete P;
+    const auto& packages=this->packageList.keys();
+    for(const auto& IaV:packages){
+        delete this->packageList[IaV];
+    }
+
     this->packageList.clear();
+    this->packageStatus.clear();
 }
 
 
@@ -54,4 +68,15 @@ void asulPackageManager::clear()
 const auto &asulPackageManager::getPackageList() const
 {
     return this->packageList;
+}
+
+asulPackageManager::PACKAGE_STATE asulPackageManager::getPackageStatus(const QString &IaV) const
+{
+    // check if this package exsits
+    if(this->packageList.contains(IaV)==false){
+        throw asulException(QString("package '%1' does not exsit!").arg(IaV));
+    }
+
+    // get status
+    return this->packageStatus[IaV];
 }

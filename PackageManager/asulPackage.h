@@ -19,8 +19,8 @@ class asulPackage
     QVector<asulSubscription*> subscriptionList;
 
 public:
-    asulPackage(const QString& I,const QString& V);
-    asulPackage(const QString& IaV);
+    explicit asulPackage(const QString& I,const QString& V);
+    explicit asulPackage(const QString& IaV);
     ~asulPackage();
 
     void addDependency(const QString& D);
