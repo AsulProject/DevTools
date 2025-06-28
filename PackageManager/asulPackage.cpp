@@ -17,8 +17,8 @@ asulPackage::asulPackage(const QString& IaV) {
 }
 
 asulPackage::~asulPackage() {
-    for (auto* S : std::as_const(this->signalList)) delete S;
-    for (auto* S : std::as_const(this->subscriptionList)) delete S;
+    for (auto* signal : std::as_const(this->signalList)) delete signal;
+    for (auto* subscription : std::as_const(this->subscriptionList)) delete subscription;
 }
 
 // appends

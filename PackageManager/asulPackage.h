@@ -3,18 +3,17 @@
 
 #include <QList>
 #include <QString>
-#include <QVector>
 
-class asulSignal;
-class asulSubscription;
+#include "asulSignal.h"
+#include "asulSubscription.h"
 
 class asulPackage {
     QString id;
     QString version;
-    QVector<QString /*IaV*/> dependencyList;
+    QList<QString /*IaV*/> dependencyList;
 
-    QVector<asulSignal*> signalList;
-    QVector<asulSubscription*> subscriptionList;
+    QList<asulSignal*> signalList;
+    QList<asulSubscription*> subscriptionList;
 
 public:
     explicit asulPackage(const QString& I, const QString& V);
@@ -30,6 +29,7 @@ public:
     inline QString getName() const { return this->id + "@" + this->version; }
     inline const auto& getDependencyList() const { return this->dependencyList; }
     inline const auto& getSigalList() const { return this->signalList; }
+    inline const auto& getSubcriptionList() const { return this->subscriptionList; }
 
     QString toString() const { return this->getName(); }
 };

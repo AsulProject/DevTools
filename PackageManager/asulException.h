@@ -4,24 +4,40 @@
 #include <QList>
 #include <QString>
 
-namespace asul {
+class asulSubscription;
 
+// base exception
+namespace asulException {
 class Exception : public std::runtime_error {
 public:
     explicit Exception(const QString& msg)
         : std::runtime_error(msg.toStdString()) {}
 };
 
-class PackageManagerCircularDependencyError : Exception {
+// circular dependency when building packages
+class circularDependencyError : public Exception {
     QList<QString> circle;
 
 public:
-    explicit PackageManagerCircularDependencyError(const QList<QString>& C)
+    explicit circularDependencyError(const QList<QString>& C)
         : Exception("Circular Dependency Detected")
         , circle(C) {}
     inline const auto& getCircle() const { return this->circle; }
 };
 
-} // namespace asul
+// subscribe to unknown signal
+// this should be an issue of the package itself
+// the author may forgot to add dependency for subscription
+class unkownSignal : public Exception {
+    asulSubscription* subscription;
+
+public:
+    explicit unkownSignal(asulSubscription* S)
+        : Exception("unknown signal")
+        , subscription(S) {}
+    inline auto getSubscription() const { return this->subscription; }
+};
+
+} // namespace asulException
 
 #endif // ASULEXCEPTION_H

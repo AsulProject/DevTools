@@ -5,6 +5,8 @@
 
 #include "asulException.h"
 #include "asulPackageManager.h"
+#include "asulSignal.h"
+#include "asulSubscription.h"
 
 void checkCircularDependency(int packageCount, const std::vector<std::vector<int>>& edge, const QList<QString>& index_to_IaV) {
     std::vector<int> checked(packageCount, 0); // packages which have been visited
@@ -26,7 +28,7 @@ void checkCircularDependency(int packageCount, const std::vector<std::vector<int
                 QList<QString> path;
                 for (const auto& pkg : stack) path.append(index_to_IaV[pkg]); // make index(int) -> IaV(QString) for exception
 
-                throw asul::PackageManagerCircularDependencyError(path);
+                throw asulException::circularDependencyError(path);
             }
 
             dfs(dfs, nxt);
@@ -83,19 +85,29 @@ std::vector<int> generateBuildingOrder(int packageCount, const std::vector<std::
 }
 
 void asulPackageManager::buildPackages() {
-    // 1. init package infomation
+    // 0. init package infomation
 
-    const auto packages = this->packageList.keys();
-    int packageCount = packages.size();
+    const auto& index_to_IaV = this->packageList.keys();
+    const auto& index_to_ptr = this->packageList.values();
+    int packageCount = index_to_IaV.size();
 
     QMap<QString /* IaV */, int /* index */> IaV_to_index;
     for (int index = 0; index < packageCount; index++) { // generate a map between package(QString::IaV) and index(int)
-        IaV_to_index[packages[index]] = index;
+        IaV_to_index[index_to_IaV[index]] = index;
     }
 
     if (packageCount == 0) {
         // there is no package in this packageManager. return and do nothing.
         return;
+    }
+
+    // 1. clear previous build result
+    // clear signal's subscriber
+
+    for (const auto& pkg_ptr : index_to_ptr) {
+        for (const auto& signal : pkg_ptr->getSigalList()) {
+            signal->clearSubscriber();
+        }
     }
 
     // 2. Build the dependency graph
@@ -104,19 +116,42 @@ void asulPackageManager::buildPackages() {
     edge.resize(packageCount, std::vector<int>(0)); // resize to fit the graph
 
     // generate edges
-    for (const auto& package : packages) {
-        int current_package = IaV_to_index[package];
-        for (const auto& IaV : this->packageList[package]->getDependencyList()) {
-            int forward_package = IaV_to_index[IaV];
+    for (int cur = 0; cur < packageCount; cur++) {
+        for (const auto& IaV : index_to_ptr[cur]->getDependencyList()) {
+            int dependency = IaV_to_index[IaV];
             // add a dependency
-            edge[forward_package].push_back(current_package);
+            edge[dependency].push_back(cur);
         }
     }
 
     // 3. Check if there is circular dependency
-    // if there is one, this function will throw an exception (asul::packageManagerCircularDenpendencyDetected)
-    checkCircularDependency(packageCount, edge, packages);
+    // if there is one, this function will throw an exception (asulException::circularDenpendencyDetected)
+    checkCircularDependency(packageCount, edge, index_to_IaV);
 
     // 4. Do topo-sort to generate a correct order of building packages
     std::vector<int> order = generateBuildingOrder(packageCount, edge);
+
+    // 5. load packages
+    QMap<QString, asulSignal*> loaded_signal; // loaded signals
+
+    for (int cur = 0; cur < packageCount; cur++) {
+        // load it's signals
+        for (const auto& signal : index_to_ptr[cur]->getSigalList()) {
+            loaded_signal.insert(signal->getFullID(), signal);
+        }
+
+        // process it's subscriptions
+        for (const auto& subscription : index_to_ptr[cur]->getSubcriptionList()) {
+            // if the host package hasn't loaded, throw an exception (asulException::unknownSignal)
+            // this should be an issure of the package itself. the author may forgot to add dependency
+            if (loaded_signal.contains(subscription->getSignal()) == false) {
+                throw asulException::unkownSignal(subscription);
+            }
+
+            // add it to targetSignal's subscriber list
+            loaded_signal[subscription->getSignal()]->addSubscriber(subscription);
+        }
+    }
+
+    // build end
 }

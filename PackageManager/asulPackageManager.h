@@ -2,7 +2,6 @@
 #define ASULPACKAGEMANAGER_H
 
 #include <QMap>
-#include <QVector>
 
 #include "asulPackage.h"
 

@@ -17,7 +17,7 @@ void asulPackageManager::addPackage(asulPackage* P) {
 void asulPackageManager::setPackageStatus(const QString& IaV, PACKAGE_STATE status) {
     // check if this package exsits
     if (this->packageList.contains(IaV) == false) {
-        throw asul::Exception(QString("package '%1' does not exsit!").arg(IaV));
+        throw asulException::Exception(QString("package '%1' does not exsit!").arg(IaV));
     }
 
     // set status
@@ -53,7 +53,7 @@ void asulPackageManager::clear() {
 asulPackageManager::PACKAGE_STATE asulPackageManager::getPackageStatus(const QString& IaV) const {
     // check if this package exsits
     if (this->packageList.contains(IaV) == false) {
-        throw asulException(QString("package '%1' does not exsit!").arg(IaV));
+        throw asulException::Exception(QString("package '%1' does not exsit!").arg(IaV));
     }
 
     // get status
