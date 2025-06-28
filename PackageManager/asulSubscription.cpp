@@ -1,4 +1,5 @@
 #include "asulSubscription.h"
+#include "asulException.h"
 
 #include <QDebug>
 
@@ -23,17 +24,15 @@ void asulSubscription::addCommand(const QVector<QString> &commands)
     this->commandList.append(commands);
 }
 
-bool asulSubscription::addArg(const QString &key, const QString &value)
+void asulSubscription::addArg(const QString &key, const QString &value)
 {
     // check if this arg exsits
-    if(this->argList.contains(key)){
-        qDebug()<<QString("arg {%1,%2} already exsits.").arg(key).arg(value);
-        return false;
+    if(this->argList.contains(key)==false){
+        throw asulException(QString("arg {%1,%2} already exsits.").arg(key).arg(value));
     }
 
     // add it to argList
     this->argList.insert(key,value);
-    return true;
 }
 
 

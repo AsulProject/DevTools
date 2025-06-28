@@ -2,22 +2,31 @@
 #define ASULPACKAGEMANAGER_H
 
 #include <QVector>
+#include <QMap>
 #include "asulPackage.h"
 #include "asulSignal.h"
 #include "asulSubscription.h"
 
 class asulPackageManager
 {
-    QVector<asulPackage*> packageList;
-    QVector<asulSignal*> signalList;
-    QVector<asulSubscription*> subscriptionList;
+public:
+    enum class PACKAGE_STATE : int {
+        ENABLE,
+        DISABLE
+    };
+
+private:
+    QMap<QString /* IaV */,asulPackage*> packageList;
+    QMap<QString /* IaV */,PACKAGE_STATE> packageStatus;
+
 public:
     asulPackageManager();
     ~asulPackageManager();
 
     void addPackage(asulPackage* P);
-    void addSignal(asulSignal* S);
-    void addSubscription(asulSubscription* S);
+
+    void setPackageStatus(const QString& IaV,PACKAGE_STATE status);
+    void setAllPackageStatus(PACKAGE_STATE status);
 
     void clear();
 

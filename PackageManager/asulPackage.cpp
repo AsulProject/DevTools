@@ -1,4 +1,5 @@
 #include "asulPackage.h"
+#include "asulSignal.h"
 #include "asulSubscription.h"
 #include <QStringList>
 
@@ -16,12 +17,18 @@ asulPackage::asulPackage(const QString &IaV)
     this->version = (parts.size() > 1) ? parts[1] : "";
 }
 
+asulPackage::~asulPackage()
+{
+    for(auto *S:this->signalList)   delete S;
+    for(auto *S:this->subscriptionList)   delete S;
+}
+
 
 
 
 // adds
 
-void asulPackage::addDependency(asulPackage *D)
+void asulPackage::addDependency(const QString& D)
 {
     this->dependencyList.append(D);
 }

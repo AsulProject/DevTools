@@ -20,7 +20,7 @@ public:
 
     void addCommand(const QString& command);
     void addCommand(const QVector<QString>& commands);
-    bool addArg(const QString& key,const QString& value);
+    void addArg(const QString& key,const QString& value);
 
     asulPackage* getHost()const;
     asulSignal* getSignal()const;

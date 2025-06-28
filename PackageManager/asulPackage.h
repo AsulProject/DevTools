@@ -13,7 +13,7 @@ class asulPackage
 {
     QString id;
     QString version;
-    QVector<asulPackage*> dependencyList;
+    QVector<QString /*IaV*/> dependencyList;
 
     QVector<asulSignal*> signalList;
     QVector<asulSubscription*> subscriptionList;
@@ -21,8 +21,9 @@ class asulPackage
 public:
     asulPackage(const QString& I,const QString& V);
     asulPackage(const QString& IaV);
+    ~asulPackage();
 
-    void addDependency(asulPackage* D);
+    void addDependency(const QString& D);
     void addSignal(asulSignal* S);
     void addSubscription(asulSubscription* S);
 

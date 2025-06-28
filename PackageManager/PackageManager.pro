@@ -20,6 +20,7 @@ SOURCES += \
 HEADERS += \
     PackageManager.h \
     QStringModifier.h \
+    asulException.h \
     asulPackage.h \
     asulPackageManager.h \
     asulSignal.h \

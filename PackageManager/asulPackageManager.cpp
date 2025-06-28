@@ -1,4 +1,5 @@
 #include "asulPackageManager.h"
+#include "asulException.h"
 
 asulPackageManager::asulPackageManager(){}
 
@@ -12,17 +13,26 @@ asulPackageManager::~asulPackageManager()
 
 void asulPackageManager::addPackage(asulPackage *P)
 {
-    this->packageList.append(P);
+    this->packageList.insert(P->getName(),P);
 }
 
-void asulPackageManager::addSignal(asulSignal *S)
+void asulPackageManager::setPackageStatus(const QString &IaV, PACKAGE_STATE status)
 {
-    this->signalList.append(S);
+    // check if this package exsits
+    if(this->packageList.contains(IaV)==false){
+        throw asulException(QString("package '%1' does not exsit!").arg(IaV));
+    }
+
+    // set status
+    this->packageStatus[IaV]=status;
 }
 
-void asulPackageManager::addSubscription(asulSubscription *S)
+void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status)
 {
-    this->subscriptionList.append(S);
+    // set status for all packages
+    for(const auto& key:this->packageStatus.keys()){
+        this->packageStatus[key]=status;
+    }
 }
 
 
@@ -33,11 +43,7 @@ void asulPackageManager::addSubscription(asulSubscription *S)
 void asulPackageManager::clear()
 {
     for(auto P:this->packageList)   delete P;
-    for(auto S:this->signalList)    delete S;
-    for(auto S:this->subscriptionList)    delete S;
     this->packageList.clear();
-    this->signalList.clear();
-    this->subscriptionList.clear();
 }
 
 
@@ -48,14 +54,4 @@ void asulPackageManager::clear()
 const auto &asulPackageManager::getPackageList() const
 {
     return this->packageList;
-}
-
-const auto &asulPackageManager::getSignalList() const
-{
-    return this->signalList;
-}
-
-const auto &asulPackageManager::getSubscriptionList() const
-{
-    return this->subscriptionList;
 }
