@@ -9,7 +9,7 @@ asulSubscription::asulSubscription(asulPackage* H, asulSignal* S) {
     this->signal = S;
 }
 
-// adds
+// appends
 
 void asulSubscription::addCommand(const QString& command) {
     this->commandList.append(command);
@@ -27,22 +27,4 @@ void asulSubscription::addArg(const QString& key, const QString& value) {
 
     // add it to argList
     this->argList.insert(key, value);
-}
-
-// gets
-
-asulPackage* asulSubscription::getHost() const {
-    return this->host;
-}
-
-asulSignal* asulSubscription::getSignal() const {
-    return this->signal;
-}
-
-const auto& asulSubscription::getCommandList() const {
-    return this->commandList;
-}
-
-const auto& asulSubscription::getArgList() const {
-    return this->argList;
 }

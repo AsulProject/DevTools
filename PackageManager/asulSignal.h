@@ -5,7 +5,8 @@
 #include <QString>
 #include <QVector>
 
-class asulPackage;
+#include "asulPackage.h"
+
 class asulSubscription;
 
 class asulSignal {
@@ -19,11 +20,11 @@ public:
 
     void addSubscriber(asulSubscription* S);
 
-    asulPackage* getHost() const;
-    QString getID() const;
-    QString getFullID() const;
-    const auto& getTargetFile() const;
-    const auto& getSubscriberList() const;
+    asulPackage* getHost() const { return this->host; }
+    QString getID() const { return this->id; }
+    QString getFullID() const { return this->host->getName() + "." + this->id; }
+    const auto& getTargetFile() const { return this->targetFile; }
+    const auto& getSubscriberList() const { return this->subscriberList; }
 };
 
 #endif // ASULSIGNAL_H

@@ -21,10 +21,10 @@ asulPackage::~asulPackage() {
     for (auto* S : std::as_const(this->subscriptionList)) delete S;
 }
 
-// adds
+// appends
 
-void asulPackage::addDependency(const QString& D) {
-    this->dependencyList.append(D);
+void asulPackage::addDependency(const QString& IaV) {
+    this->dependencyList.append(IaV);
 }
 
 void asulPackage::addSignal(asulSignal* S) {
@@ -33,10 +33,4 @@ void asulPackage::addSignal(asulSignal* S) {
 
 void asulPackage::addSubscription(asulSubscription* S) {
     this->subscriptionList.append(S);
-}
-
-// gets
-
-QString asulPackage::toString() const {
-    return this->getName();
 }

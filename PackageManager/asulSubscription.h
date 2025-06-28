@@ -21,10 +21,10 @@ public:
     void addCommand(const QVector<QString>& commands);
     void addArg(const QString& key, const QString& value);
 
-    asulPackage* getHost() const;
-    asulSignal* getSignal() const;
-    const auto& getCommandList() const;
-    const auto& getArgList() const;
+    asulPackage* getHost() const { return this->host; }
+    asulSignal* getSignal() const { return this->signal; }
+    const auto& getCommandList() const { return this->commandList; }
+    const auto& getArgList() const { return this->argList; }
 };
 
 #endif // ASULSUBSCRIPTION_H

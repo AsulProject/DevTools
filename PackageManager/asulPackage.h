@@ -21,7 +21,7 @@ public:
     explicit asulPackage(const QString& IaV);
     ~asulPackage();
 
-    void addDependency(const QString& D);
+    void addDependency(const QString& IaV);
     void addSignal(asulSignal* S);
     void addSubscription(asulSubscription* S);
 
@@ -31,7 +31,7 @@ public:
     inline const auto& getDependencyList() const { return this->dependencyList; }
     inline const auto& getSigalList() const { return this->signalList; }
 
-    QString toString() const;
+    QString toString() const { return this->getName(); }
 };
 
 #endif // ASULPACKAGE_H

@@ -5,8 +5,6 @@
 #include <QVector>
 
 #include "asulPackage.h"
-#include "asulSignal.h"
-#include "asulSubscription.h"
 
 class asulPackageManager {
 public:
@@ -27,6 +25,8 @@ public:
 
     void setPackageStatus(const QString& IaV, PACKAGE_STATE status);
     void setAllPackageStatus(PACKAGE_STATE status);
+
+    void buildPackages();
 
     bool contain(const QString& IaV) const;
     void clear();

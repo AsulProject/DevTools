@@ -8,7 +8,7 @@ asulPackageManager::~asulPackageManager() {
     this->clear();
 }
 
-// adds
+// appends
 
 void asulPackageManager::addPackage(asulPackage* P) {
     this->packageList.insert(P->getName(), P);
@@ -17,7 +17,7 @@ void asulPackageManager::addPackage(asulPackage* P) {
 void asulPackageManager::setPackageStatus(const QString& IaV, PACKAGE_STATE status) {
     // check if this package exsits
     if (this->packageList.contains(IaV) == false) {
-        throw asulException(QString("package '%1' does not exsit!").arg(IaV));
+        throw asul::Exception(QString("package '%1' does not exsit!").arg(IaV));
     }
 
     // set status
@@ -32,6 +32,8 @@ void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status) {
     }
 }
 
+// utils
+
 bool asulPackageManager::contain(const QString& IaV) const {
     return this->packageList.contains(IaV);
 }
@@ -45,6 +47,8 @@ void asulPackageManager::clear() {
     this->packageList.clear();
     this->packageStatus.clear();
 }
+
+// gets
 
 asulPackageManager::PACKAGE_STATE asulPackageManager::getPackageStatus(const QString& IaV) const {
     // check if this package exsits

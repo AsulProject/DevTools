@@ -12,6 +12,7 @@ SOURCES += \
     QStringModifier.cpp \
     asulPackage.cpp \
     asulPackageManager.cpp \
+    asulPackageManager_buildPackages.cpp \
     asulSignal.cpp \
     asulSubscription.cpp \
     main.cpp \
