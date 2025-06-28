@@ -1,58 +1,44 @@
 #include "asulPackageManager.h"
+
 #include "asulException.h"
 
-asulPackageManager::asulPackageManager(){}
+asulPackageManager::asulPackageManager() {}
 
-asulPackageManager::~asulPackageManager()
-{
+asulPackageManager::~asulPackageManager() {
     this->clear();
 }
 
-
 // adds
 
-void asulPackageManager::addPackage(asulPackage *P)
-{
-    this->packageList.insert(P->getName(),P);
+void asulPackageManager::addPackage(asulPackage* P) {
+    this->packageList.insert(P->getName(), P);
 }
 
-void asulPackageManager::setPackageStatus(const QString &IaV, PACKAGE_STATE status)
-{
+void asulPackageManager::setPackageStatus(const QString& IaV, PACKAGE_STATE status) {
     // check if this package exsits
-    if(this->packageList.contains(IaV)==false){
+    if (this->packageList.contains(IaV) == false) {
         throw asulException(QString("package '%1' does not exsit!").arg(IaV));
     }
 
     // set status
-    this->packageStatus[IaV]=status;
+    this->packageStatus[IaV] = status;
 }
 
-void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status)
-{
+void asulPackageManager::setAllPackageStatus(PACKAGE_STATE status) {
     // set status for all packages
-    const auto& packages=this->packageList.keys();
-    for(const auto& IaV:packages){
-        this->packageStatus[IaV]=status;
+    const auto& packages = this->packageList.keys();
+    for (const auto& IaV : packages) {
+        this->packageStatus[IaV] = status;
     }
 }
 
-
-
-
-
-
-
-
-
-bool asulPackageManager::contain(const QString &IaV) const
-{
+bool asulPackageManager::contain(const QString& IaV) const {
     return this->packageList.contains(IaV);
 }
 
-void asulPackageManager::clear()
-{
-    const auto& packages=this->packageList.keys();
-    for(const auto& IaV:packages){
+void asulPackageManager::clear() {
+    const auto& packages = this->packageList.keys();
+    for (const auto& IaV : packages) {
         delete this->packageList[IaV];
     }
 
@@ -60,20 +46,9 @@ void asulPackageManager::clear()
     this->packageStatus.clear();
 }
 
-
-
-
-// gets
-
-const auto &asulPackageManager::getPackageList() const
-{
-    return this->packageList;
-}
-
-asulPackageManager::PACKAGE_STATE asulPackageManager::getPackageStatus(const QString &IaV) const
-{
+asulPackageManager::PACKAGE_STATE asulPackageManager::getPackageStatus(const QString& IaV) const {
     // check if this package exsits
-    if(this->packageList.contains(IaV)==false){
+    if (this->packageList.contains(IaV) == false) {
         throw asulException(QString("package '%1' does not exsit!").arg(IaV));
     }
 

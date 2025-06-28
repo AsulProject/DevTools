@@ -5,7 +5,8 @@
 
 class asulException : std::runtime_error {
 public:
-    explicit asulException(const QString& msg) : std::runtime_error(msg.toStdString()) {}
+    explicit asulException(const QString& msg)
+        : std::runtime_error(msg.toStdString()) {}
 };
 
 #endif // ASULEXCEPTION_H

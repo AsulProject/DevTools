@@ -1,20 +1,21 @@
 #ifndef QSTRINGMODIFIER_H
 #define QSTRINGMODIFIER_H
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
+
 #include "stdafx.h"
 
-class QStringModifier : public QObject
-{
+class QStringModifier : public QObject {
     Q_OBJECT
 public:
-    explicit QStringModifier(QObject *parent = nullptr);
+    explicit QStringModifier(QObject* parent = nullptr);
     ~QStringModifier();
-    void installModifier(QMap<QString,QString> modifier);
+    void installModifier(QMap<QString, QString> modifier);
     QString get(QString content);
+
 private:
-    QMap<QString,QString> mod;
+    QMap<QString, QString> mod;
 signals:
 };
 

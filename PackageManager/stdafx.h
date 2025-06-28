@@ -13,13 +13,11 @@
     Q_PROPERTY(TYPE p##M MEMBER _p##M NOTIFY p##M##Changed) \
 public:                                                     \
     Q_SIGNAL void p##M##Changed();                          \
-    void set##M(TYPE M)                                     \
-    {                                                       \
+    void set##M(TYPE M) {                                   \
         _p##M = M;                                          \
         Q_EMIT p##M##Changed();                             \
     }                                                       \
-    TYPE get##M() const                                     \
-    {                                                       \
+    TYPE get##M() const {                                   \
         return _p##M;                                       \
     }                                                       \
                                                             \
@@ -41,25 +39,21 @@ public:                               \
     TYPE get##M() const;
 
 #define Q_PROPERTY_CREATE_Q_CPP(CLASS, TYPE, M) \
-    void CLASS::set##M(TYPE M)                  \
-    {                                           \
+    void CLASS::set##M(TYPE M) {                \
         Q_D(CLASS);                             \
         d->_p##M = M;                           \
         Q_EMIT p##M##Changed();                 \
     }                                           \
-    TYPE CLASS::get##M() const                  \
-    {                                           \
+    TYPE CLASS::get##M() const {                \
         return d_ptr->_p##M;                    \
     }
 
 #define Q_PRIVATE_CREATE_Q_CPP(CLASS, TYPE, M) \
-    void CLASS::set##M(TYPE M)                 \
-    {                                          \
+    void CLASS::set##M(TYPE M) {               \
         Q_D(CLASS);                            \
         d->_p##M = M;                          \
     }                                          \
-    TYPE CLASS::get##M() const                 \
-    {                                          \
+    TYPE CLASS::get##M() const {               \
         return d_ptr->_p##M;                   \
     }
 
@@ -73,12 +67,10 @@ private:                            \
 
 #define Q_PRIVATE_CREATE(TYPE, M) \
 public:                           \
-    void set##M(TYPE M)           \
-    {                             \
+    void set##M(TYPE M) {         \
         _p##M = M;                \
     }                             \
-    TYPE get##M() const           \
-    {                             \
+    TYPE get##M() const {         \
         return _p##M;             \
     }                             \
                                   \
