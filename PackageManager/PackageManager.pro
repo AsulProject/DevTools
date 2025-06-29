@@ -13,7 +13,9 @@ SOURCES += \
     asulPackage.cpp \
     asulPackageManager.cpp \
     asulPackageManager_buildPackages.cpp \
+    asulPackage_initializeFromJSON.cpp \
     asulSignal.cpp \
+    asulSignalManager.cpp \
     asulSubscription.cpp \
     main.cpp \
     PackageManager.cpp
@@ -25,6 +27,7 @@ HEADERS += \
     asulPackage.h \
     asulPackageManager.h \
     asulSignal.h \
+    asulSignalManager.h \
     asulSubscription.h \
     stdafx.h
 

@@ -28,7 +28,7 @@ void checkCircularDependency(int packageCount, const std::vector<std::vector<int
                 QList<QString> path;
                 for (const auto& index : stack) path.append(index_to_IaV[index]); // make index(int) -> IaV(QString) for exception
 
-                throw asulException::circularDependencyError(path);
+                throw asulException::circularDependency(path);
             }
 
             dfs(dfs, nxt);
@@ -94,8 +94,10 @@ void asulPackageManager::buildPackages() {
         // it = [ IaV(QString) , pkg(asulPackage*) ]
 
         // clear signal's subscriber
-        for (const auto& signal : it.value()->getSigalList()) {
-            signal->clearSubscriber();
+        for (const auto& signalManager : it.value()->getSigalManagerList()) {
+            for (const auto& signal : signalManager->getSignalList()) {
+                signal->clearSubscriber();
+            }
         }
 
         // skip disabled package
@@ -126,6 +128,13 @@ void asulPackageManager::buildPackages() {
     // generate edges
     for (int cur = 0; cur < packageCount; cur++) {
         for (const auto& IaV : index_to_ptr[cur]->getDependencyList()) {
+            if (IaV_to_index.contains(IaV) == false) {
+                // unknown dependency
+                // the denpendency pkg may be disabled
+                // or deoendency pkg does not exsit
+                throw asulException::unkownDependency(index_to_IaV[cur], IaV);
+            }
+
             int dependency = IaV_to_index[IaV];
             // add a dependency
             edge[dependency].push_back(cur);
@@ -144,14 +153,17 @@ void asulPackageManager::buildPackages() {
 
     for (int cur = 0; cur < packageCount; cur++) {
         // load it's signals
-        for (const auto& signal : index_to_ptr[cur]->getSigalList()) {
-            loaded_signal.insert(signal->getFullID(), signal);
+        for (const auto& signalManager : index_to_ptr[cur]->getSigalManagerList()) {
+            for (const auto& signal : signalManager->getSignalList()) {
+                loaded_signal.insert(signal->getID(), signal);
+            }
         }
 
         // process it's subscriptions
         for (const auto& subscription : index_to_ptr[cur]->getSubcriptionList()) {
             // if the host package hasn't loaded, throw an exception (asulException::unknownSignal)
-            // this should be an issure of the package itself. the author may forgot to add dependency
+            // the author may forget to add dependency
+            // or dependency was disabled
             if (loaded_signal.contains(subscription->getSignal()) == false) {
                 throw asulException::unkownSignal(subscription);
             }

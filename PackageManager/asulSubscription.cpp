@@ -1,10 +1,12 @@
 #include "asulSubscription.h"
 
 #include <QDebug>
+#include <QVariant>
 
 #include "asulException.h"
 
-asulSubscription::asulSubscription(const QString& H, const QString& S) {
+asulSubscription::asulSubscription(const QString& H, const QString& S, QObject* parent)
+    : QObject(parent) {
     this->host = H;
     this->signal = S;
 }
@@ -19,10 +21,10 @@ void asulSubscription::addCommand(const QList<QString>& commands) {
     this->commandList.append(commands);
 }
 
-void asulSubscription::addArg(const QString& key, const QString& value) {
+void asulSubscription::addArg(const QString& key, const QVariant& value) {
     // check if this arg exsits
-    if (this->argList.contains(key) == false) {
-        throw asulException::Exception(QString("arg {%1,%2} already exsits.").arg(key, value));
+    if (this->argList.contains(key) == true) {
+        throw asulException::Exception(QString("arg {%1,%2} already exsits.").arg(key, value.toString()));
     }
 
     // add it to argList

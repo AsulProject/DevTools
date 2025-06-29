@@ -1,6 +1,6 @@
 {
     "packageData": {
-        "id": "asul.base.package",
+        "id": "asul.base",
         "name": "i18n:package.name",
         "description": "i18n:package.description",
         "icon": "icon/icon.png",
@@ -13,14 +13,14 @@
             {
                 "entries":
                 [
-                    "asul.base.playerSlotChanged.slot1","asul.base.playerSlotChanged.slot2"
+                    "playerSlotChanged.slot1","playerSlotChanged.slot2"
                 ],
                 "targetFileLocation": "AsulBaseSignalSlot.cfg"
             },
             {
                 "entries":
                 [
-                    "asul.base.playerSlotChanged.slot3"
+                    "playerSlotChanged_slot3","ticker"
                 ],
                 "targetFileLocation": "AsulBaseSignalAlias.cfg"
             }

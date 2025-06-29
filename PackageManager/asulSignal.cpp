@@ -2,8 +2,8 @@
 
 #include "asulSubscription.h"
 
-asulSignal::asulSignal(const QString& H, const QString& I, const QString& T)
-    : targetFile(T) {
+asulSignal::asulSignal(const QString& H, const QString& I, QObject* parent)
+    : QObject(parent) {
     this->host = H;
     this->id = I;
 }
@@ -20,7 +20,7 @@ void asulSignal::clearSubscriber() {
 
 // gets
 
-auto asulSignal::getAliasCommand() const {
+QString asulSignal::getAliasCommand() const {
     QString cmds = "";
     for (const auto& subscription : this->subscriberList) {
         for (const auto& cmd : subscription->getCommandList()) {

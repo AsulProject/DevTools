@@ -6,50 +6,166 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QQueue>
+#include <QTimer>
 
+#include "asulException.h"
+#include "asulSignal.h"
 #include "ui_PackageManager.h"
+
 #define i18n(x) x
 #define DBG(x) ui->debugPlainText->appendPlainText(x)
 #define ASULBASE "Asul/Base.cfg"
 #define ASULBASEPACKAGE "asul.base.package@1.0.0"
 #define DEBUGENV "DebugENV"
+
 PackageManager::PackageManager(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::PackageManager) {
+    //
+    // constrcut begin
+    //
     ui->setupUi(this);
-    addBaseSignals();
     connect(ui->signalSlotTreeWidget, &QTreeWidget::itemClicked, this, &PackageManager::onSignalItemClicked);
-    updateSignalTreeWidget();
 
-    foreach (const QString& pkgId, PackageList) {
-        packageEnabledMap[pkgId] = true; // 默认启用
-    }
-    updateSignals();
+    {
+        // debug: disableAll
+        QPushButton* disableAll = new QPushButton(this);
+        connect(disableAll, &QPushButton::clicked, this, [=] {
+            this->packageManager.setAllPackageStatus(asulPackageManager::PACKAGE_STATE::DISABLE);
+        });
+        disableAll->setText("[DEBUG] Disable All");
+        ui->packageListVLayout->addWidget(disableAll);
 
-    // Debug Area
-    QList<PackageManager::packageData> List = findSubsequentNodes(packageData("asul.package1@1.0.0"));
-    foreach (PackageManager::packageData data, List) {
-        qDebug() << data.toString();
+        // debug: enableAll
+        QPushButton* enableAll = new QPushButton(this);
+        connect(enableAll, &QPushButton::clicked, this, [=] {
+            this->packageManager.setAllPackageStatus(asulPackageManager::PACKAGE_STATE::ENABLE);
+        });
+        enableAll->setText("[DEBUG] enable All");
+        ui->packageListVLayout->addWidget(enableAll);
+
+        // debug: reloadPackage
+        QPushButton* reloadPackage = new QPushButton(this);
+        connect(reloadPackage, &QPushButton::clicked, this, [=] {
+            int count = ui->packageListVLayout->count();
+            for (int i = count - 1; i >= 0; --i) {
+                QLayoutItem* item = ui->packageListVLayout->itemAt(i);
+                if (QWidget* widget = item->widget()) {
+                    if (qobject_cast<QPushButton*>(widget) == nullptr) {
+                        // 移除布局项，删除控件
+                        QLayoutItem* removedItem = ui->packageListVLayout->takeAt(i);
+                        widget->deleteLater();
+                        delete removedItem;
+                    }
+                    // 保留按钮给debug用
+                }
+            }
+            this->packageManager.clear();
+            // 重新收集包
+            this->collectPackageFromDir(DEBUGENV);
+        });
+        reloadPackage->setText("[DEBUG] Reload package");
+        ui->packageListVLayout->addWidget(reloadPackage);
+
+        // debug: loadTreeView
+        QPushButton* refreshTreeView = new QPushButton(this);
+        connect(refreshTreeView, &QPushButton::clicked, this, [=] {
+            this->updateSignalTreeWidget();
+        });
+        refreshTreeView->setText("[DEBUG] Refresh tree view");
+        ui->packageListVLayout->addWidget(refreshTreeView);
+
+        // debug: buildPackage
+        QPushButton* buildPackage = new QPushButton(this);
+        connect(buildPackage, &QPushButton::clicked, this, [=] {
+            DBG("building packages...");
+            try {
+                this->packageManager.buildPackages();
+                DBG("building successfully!");
+            } catch (const asulException::unkownSignal& err) {
+                DBG("[ERROR] " + QString(err.what()) + " " + err.getSubscription()->getSignal());
+            } catch (const asulException::unkownDependency& err) {
+                DBG("[ERROR] " + QString(err.what()) + " " + err.getDependency());
+            } catch (const asulException::Exception& err) {
+                DBG("[ERROR] " + QString(err.what()));
+            }
+        });
+        buildPackage->setText("[DEBUG] build packages");
+        ui->packageListVLayout->addWidget(buildPackage);
     }
-    // foreach(packageData data,list){
-    //     qDebug()<<data.toString();
-    // }
+
+    // collectPackage
+    this->collectPackageFromDir(DEBUGENV);
 }
 
 PackageManager::~PackageManager() {
     delete ui;
 }
 
-void PackageManager::registerSignal(QString sHost, QString sName, QString sArgu) {
-    if (!signalList.contains(sHost)) {
-        signalList.append(sHost);
+void PackageManager::collectPackageFromJSON(const QString& path) {
+    QFile metaDataFile(path);
+    if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
+        DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
+        return;
     }
-    if (!signalMap[sHost].contains(sName))
-        signalMap[sHost].append(QStringList{sName});
-    else
-        DBG(sName + " Already Exist! Check MetaData !!!");
-    if (!signalArgu[sName].contains(QString(sArgu)))
-        signalArgu[sName].append(QString(sArgu));
+    QString originContent = metaDataFile.readAll();
+    metaDataFile.close();
+
+    // construct package object
+    asulPackage* currentPackage = new asulPackage(&this->packageManager);
+
+    // connect debug msg
+    connect(currentPackage, &asulPackage::sendMsg, this, [=](const QString& msg) {
+        DBG(msg);
+    });
+
+    // init form JSON
+    try {
+        currentPackage->initializeFromJSON(QJsonDocument::fromJson(originContent.toUtf8()).object());
+    } catch (const asulException::Exception& err) {
+        DBG("[ERROR] " + QString(err.what()));
+        delete currentPackage;
+        return;
+    }
+
+    // ui
+    QWidget* packageArea = new QWidget(this);
+
+    QHBoxLayout* packageLayout = new QHBoxLayout(packageArea);
+
+    QLineEdit* packageIDLine = new QLineEdit(currentPackage->getName(), packageArea);
+    packageIDLine->setReadOnly(true);
+
+    QPushButton* packageManageBtn = new QPushButton(packageArea);
+
+    // process status switch button
+    connect(packageManageBtn, &QPushButton::clicked, currentPackage, [=]() {
+        this->packageManager.togglePacakgeStatus(currentPackage->getName());
+    });
+    connect(&this->packageManager, &asulPackageManager::onPackageStatusChanged, currentPackage, [=](const QString& IaV, asulPackageManager::PACKAGE_STATE status) {
+        if (IaV != currentPackage->getName())
+            return;
+
+        if (status == asulPackageManager::PACKAGE_STATE::ENABLE)
+            packageManageBtn->setText("On");
+        else
+            packageManageBtn->setText("Off");
+    });
+
+    // add package to packageManager
+    packageManager.addPackage(currentPackage, asulPackageManager::PACKAGE_STATE::DISABLE);
+
+    // add to ui
+    packageLayout->addWidget(packageIDLine, 9);
+    packageLayout->addWidget(packageManageBtn, 1);
+    ui->packageListVLayout->addWidget(packageArea);
+}
+
+void PackageManager::collectPackageFromDir(const QString& path) {
+    QDir packageDir = QApplication::applicationDirPath().replace("\\", "/") + "/" + path;
+    for (const auto& info : packageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        this->collectPackageFromJSON(packageDir.path() + "/" + info.fileName() + "/data.json");
+    }
 }
 
 void PackageManager::clearLayout(QLayout* layout) {
@@ -65,308 +181,94 @@ void PackageManager::clearLayout(QLayout* layout) {
     }
 }
 
-void PackageManager::clearSignals() {
-    signalList.clear();
-    signalMap.clear();
-    signalArgu.clear();
-    PackageList.clear();
-    Packages.clear();
-    id_dir_map.clear();
-    nodeMap.clear();
-    cleanupTopology();
-    addBaseSignals();
-}
-
-void PackageManager::addBaseSignals() {
-    // JUST DEBUG USE, IF YOU ARE MOVE IT TO DEBUGENV: YOU CAN ANNOTATE IT !!!
-    // JUST DEBUG USE, IF YOU ARE MOVE IT TO DEBUGENV: YOU CAN ANNOTATE IT !!!
-    // JUST DEBUG USE, IF YOU ARE MOVE IT TO DEBUGENV: YOU CAN ANNOTATE IT !!!
-
-    // registerSignal(ASULBASE,"Asul.Base.Signal1","alias1;alias2;");
-    // registerSignal(ASULBASE,"Asul.Base.PlayerSlot.W","+forward;");
-    // registerSignal(ASULBASE,"Asul.Base.PlayerSlot.D","+moveright;");
-}
-
 void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
     Q_UNUSED(column);
-    if (item->childCount() == 0) { // 子节点
-        QString signalName = item->data(0, Qt::UserRole).toString();
-        if (signalArgu.contains(signalName)) {
-            ui->sArguLine->setText("alias " + signalName + " \"" + signalArgu[signalName] + "\"");
-            QMap<QString, QStringList>::const_iterator iter;
-            QString signalHost = "Homeless...";
-            for (iter = signalMap.constBegin(); iter != signalMap.constEnd(); ++iter) {
-                if (iter.value().contains(signalName)) {
-                    signalHost = iter.key();
-                }
-            }
-            ui->sHostLine->setText(signalHost);
-        }
+    qDebug() << "signal item clicked" << Qt::endl;
+
+    ui->sArguLine->setText("");
+    ui->sHostLine->setText("");
+
+    const QVariant var = item->data(0, Qt::UserRole);
+
+    if (var.metaType().id() == qMetaTypeId<asulSignal*>()) {
+        asulSignal* signal = var.value<asulSignal*>();
+        ui->sArguLine->setText(signal->getAliasCommand());
+        ui->sHostLine->setText(signal->getHost());
     }
 }
 
 void PackageManager::updateSignalTreeWidget() {
     ui->signalSlotTreeWidget->clear();
-    QMap<QString, QStringList>::const_iterator iter;
-    for (iter = signalMap.constBegin(); iter != signalMap.constEnd(); ++iter) {
-        QTreeWidgetItem* parentItem = new QTreeWidgetItem(ui->signalSlotTreeWidget);
-        parentItem->setText(0, iter.key());
 
-        foreach (const QString& signal, iter.value()) {
-            QTreeWidgetItem* childItem = new QTreeWidgetItem(parentItem);
-            childItem->setText(0, signal);
-            childItem->setData(0, Qt::UserRole, signal);
-        }
-    }
-    ui->signalSlotTreeWidget->expandAll();
-}
+    const auto& packages = this->packageManager.getPackageList().keys();
 
-void PackageManager::updateSignals(QList<packageData> WithOutPackageList) {
-    // 清理之前的映射和数据
-    clearSignals();
-    // 清理左侧Layout
-    clearLayout(ui->packageListVLayout);
-    dataNode* base = new dataNode();
-    base->data = packageData("asul.base.package@1.0.0");
-    nodeMap.insert(packageData(ASULBASEPACKAGE), base);
-
-    // 扫描应用目录中的包
-    QDir PackageDir = QApplication::applicationDirPath().replace("\\", "/") + "/" + DEBUGENV;
-    foreach (QFileInfo info, PackageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QFile metaDataFile(PackageDir.path() + "/" + info.fileName() + "/data.json");
-        if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
-            DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
+    for (const auto& IaV : packages) {
+        // skip disabled package
+        if (this->packageManager.getPackageStatus(IaV) == asulPackageManager::PACKAGE_STATE::DISABLE)
             continue;
+
+        // create package item
+        QTreeWidgetItem* pkgItem = new QTreeWidgetItem(ui->signalSlotTreeWidget);
+        pkgItem->setText(0, IaV);
+
+        // show dependencies
+        QTreeWidgetItem* dependencyItem = new QTreeWidgetItem(pkgItem);
+        dependencyItem->setText(0, "dependencies");
+
+        for (const auto& dependency : this->packageManager.getPackage(IaV)->getDependencyList()) {
+            QTreeWidgetItem* childItem = new QTreeWidgetItem(dependencyItem);
+            childItem->setText(0, dependency);
         }
 
-        QString originContent = metaDataFile.readAll();
-        metaDataFile.close();
+        // show signals
+        QTreeWidgetItem* signalItem = new QTreeWidgetItem(pkgItem);
+        signalItem->setText(0, "signals");
 
-        QJsonObject pData = QJsonDocument::fromJson(originContent.toUtf8()).object()["packageData"].toObject();
-        packageData currentPackage(pData["id"].toString(), pData["version"].toString());
-        QWidget* packageArea = new QWidget(this);
-        QHBoxLayout* packageLayout = new QHBoxLayout(packageArea);
+        for (const auto& signalManager : this->packageManager.getPackage(IaV)->getSigalManagerList()) {
+            QTreeWidgetItem* signalManagerItem = new QTreeWidgetItem(signalItem);
+            signalManagerItem->setText(0, signalManager->getTargetFile().fileName());
 
-        QLineEdit* packageIDLine = new QLineEdit(pData["id"].toString(), packageArea);
-        packageIDLine->setReadOnly(true);
-        QPushButton* packageManageBtn = new QPushButton(packageArea);
+            for (const auto& signal : signalManager->getSignalList()) {
+                QTreeWidgetItem* childItem = new QTreeWidgetItem(signalManagerItem);
+                childItem->setText(0, signal->getID());
+                childItem->setData(0, Qt::UserRole, QVariant::fromValue(signal));
+            }
+        }
 
-        packageManageBtn->setText(packageEnabledMap[packageData(pData["id"].toString(), pData["version"].toString())] ? "On" : "Off");
-        connect(packageManageBtn, &QPushButton::clicked, [=]() {
-            // 1. 切换状态
-            bool isEnabled = (packageManageBtn->text() == "On");
-            if (packageManageBtn->text() == "On")
-                packageManageBtn->setText("Off");
-            else
-                packageManageBtn->setText("On");
-            // 2. 记录状态到 map：用包 ID 作为 key
-            packageEnabledMap[packageData(pData["id"].toString(), pData["version"].toString())] = !isEnabled; // 注意状态翻转逻辑
+        // show subscriptoins
+        QTreeWidgetItem* subscriptionItem = new QTreeWidgetItem(pkgItem);
+        subscriptionItem->setText(0, "subscriptions");
 
-            // 3. 收集所有被标记为 Off 的包，作为 WithOutPackageList
-            QList<packageData> withOutList;
-            foreach (const packageData& id, packageEnabledMap.keys()) {
-                if (!packageEnabledMap[id]) { // Off 的包需要排除
-                    withOutList.append(findSubsequentNodes(id));
-                    withOutList.append(id);
+        for (const auto& subscription : this->packageManager.getPackage(IaV)->getSubcriptionList()) {
+            QTreeWidgetItem* parentItem = new QTreeWidgetItem(subscriptionItem);
+            parentItem->setText(0, subscription->getSignal());
+
+            // show commands
+            QTreeWidgetItem* commandItem = new QTreeWidgetItem(parentItem);
+            commandItem->setText(0, "commands");
+
+            for (const auto& command : subscription->getCommandList()) {
+                QTreeWidgetItem* childItem = new QTreeWidgetItem(commandItem);
+                childItem->setText(0, command);
+            }
+
+            // show args only when arglist is not empty
+            const auto& args = subscription->getArgList();
+
+            if (args.isEmpty() == false) {
+                QTreeWidgetItem* argItem = new QTreeWidgetItem(parentItem);
+                argItem->setText(0, "args");
+
+                for (auto it = args.begin(); it != args.end(); it++) {
+                    QTreeWidgetItem* childItem = new QTreeWidgetItem(argItem);
+                    childItem->setText(0, it.key() + " : " + it.value().toString());
                 }
             }
-            qDebug() << "withOutList: ";
-            foreach (const packageData& data, withOutList) {
-                qDebug() << data.toString();
-            }
-
-            // 4. 重新加载拓扑
-            updateSignals(withOutList);
-        });
-        packageLayout->addWidget(packageIDLine, 9);
-        packageLayout->addWidget(packageManageBtn, 1);
-        ui->packageListVLayout->addWidget(packageArea);
-
-        // 检查是否需要排除此包
-        if (WithOutPackageList.contains(currentPackage))
-            continue;
-
-        // 构建ID到目录的映射
-        PackageList.append(currentPackage.Id);
-        id_dir_map[currentPackage.Id] = info.fileName();
-
-        // 创建或获取当前包节点
-        if (!nodeMap.contains(currentPackage)) {
-            dataNode* node = new dataNode();
-            node->data = currentPackage;
-            nodeMap.insert(currentPackage, node);
-        }
-
-        // 处理依赖关系
-        foreach (QString dependencyId, pData["dependencies"].toVariant().toStringList()) {
-            // 提取依赖的版本信息（如果有）
-            QString version = "";
-            QString depId = dependencyId;
-            if (dependencyId.contains('@')) {
-                QStringList parts = dependencyId.split('@');
-                depId = parts[0];
-                version = parts[1];
-            }
-
-            // 创建依赖包数据
-            packageData dependency(depId, version);
-
-            // 确保依赖节点存在
-            if (!nodeMap.contains(dependency)) {
-                dataNode* depNode = new dataNode();
-                depNode->data = dependency;
-                nodeMap.insert(dependency, depNode);
-            }
-
-            nodeMap.value(dependency)->childList.append(nodeMap.value(currentPackage));
         }
     }
-
-    qDebug() << "PackageList {}:" << PackageList;
-
-    // 收集所有有效包数据
-    foreach (const QString packageId, PackageList) {
-        QFile metaDataFile(PackageDir.path() + "/" + id_dir_map[packageId] + "/data.json");
-
-        if (!metaDataFile.open(QIODevice::ReadOnly)) {
-            DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
-            return;
-        }
-
-        QString originContent = metaDataFile.readAll();
-        metaDataFile.close();
-        QJsonObject pRoot = QJsonDocument::fromJson(originContent.toUtf8()).object();
-        QJsonObject pData = pRoot["packageData"].toObject();
-        Packages.append(packageData(pData["id"].toString(), pData["version"].toString()));
-        packageEnabledMap[packageData(pData["id"].toString(), pData["version"].toString())] = true;
-
-        auto provides = pRoot["provides"].toObject();
-        auto subscriptions = pRoot["subscriptions"].toArray();
-        auto exports = provides["exports"].toArray();
-        auto _signals = provides["signals"].toArray();
-
-        for (const auto& signalValue : _signals) {
-            auto signalObj = signalValue.toObject();
-            auto entriesArray = signalObj["entries"].toArray();
-            QString targetFileLocation = signalObj["targetFileLocation"].toString();
-            QString signalRegisterName = pData["id"].toString() + "/" + targetFileLocation;
-            if (!signalList.contains(signalRegisterName))
-                signalList.append(signalRegisterName);
-
-            DBG("Registered List: " + signalRegisterName);
-            for (const auto& entry : entriesArray) {
-                QString content = "@" + targetFileLocation + "_" + entry.toString();
-                DBG("[Signals] " + content);
-                registerSignal(signalRegisterName, entry.toString());
-                DBG("Registered Map: " + signalRegisterName + " : " + entry.toString());
-            }
-        }
-        for (const auto& subscriptionValue : subscriptions) {
-            auto subscriptionObj = subscriptionValue.toObject();
-            QJsonObject args;
-            if (!subscriptionObj["args"].isUndefined()) {
-                args = subscriptionObj["args"].toObject();
-                if (!args["interval"].isUndefined()) {
-                }
-            }
-            QString signal = subscriptionObj["signal"].toString();
-            QStringList commands;
-            auto commandsArray = subscriptionObj["commands"].toArray();
-            for (const auto& command : commandsArray) {
-                commands.append(command.toString());
-            }
-            if (signalArgu.contains(signal)) {
-                QString cmds = commands.join(";") + ";";
-                if (!signalArgu[signal].contains(cmds))
-                    signalArgu[signal].append(cmds);
-                DBG(signal + " => " + commands.join(";") + ";");
-                DBG("Now is: " + signalArgu[signal]);
-            } else {
-                DBG("Cannot Find Signal Name:" + signal);
-            }
-        }
-    }
-    ui->packageListVLayout->addStretch();
-    updateSignalTreeWidget();
-}
-
-QList<PackageManager::packageData> PackageManager::findSubsequentNodes(const packageData& target) {
-    QList<packageData> result;
-    if (!nodeMap.contains(target))
-        return result;
-    QList<dataNode*> queue;
-    QSet<dataNode*> visited;
-    foreach (dataNode* child, nodeMap.value(target)->childList) {
-        queue.append(child);
-    }
-    while (!queue.isEmpty()) {
-        dataNode* current = queue.takeFirst();
-        if (visited.contains(current))
-            continue;
-        visited.insert(current);
-        result.append(current->data);
-        foreach (dataNode* child, current->childList) {
-            queue.append(child);
-        }
-    }
-
-    return result;
-}
-
-void PackageManager::cleanupTopology() {
-    foreach (dataNode* node, nodeMap.values()) {
-        delete node;
-    }
-    nodeMap.clear();
-}
-
-PackageManager::AsulSignal PackageManager::getSignalByArgus(QString sArgu) {
-    QMap<QString, QString>::const_iterator sArguIter;
-    QString sName = "", sHost = "";
-    for (sArguIter = signalArgu.constBegin(); sArguIter != signalArgu.constEnd(); ++sArguIter) {
-        if (sArguIter.value() == sArgu)
-            sName = sArguIter.key();
-    }
-    if (!sName.isEmpty()) {
-        QMap<QString, QStringList>::const_iterator sHostIter;
-        for (sHostIter = signalMap.constBegin(); sHostIter != signalMap.constEnd(); ++sHostIter) {
-            if (sHostIter.value().contains(sName))
-                sHost = sHostIter.key();
-        }
-    }
-    return AsulSignal(sHost, sName, sArgu);
-}
-
-PackageManager::AsulSignal PackageManager::getSignalBySignalName(QString sName) {
-    QString sArgu = signalArgu[sName];
-    QString sHost = "";
-    foreach (const auto& sHosts, signalList) {
-        if (signalMap[sHosts].contains(sName))
-            sHost = sHosts;
-    }
-    return AsulSignal(sHost, sName, sArgu);
-}
-
-QList<PackageManager::AsulSignal> PackageManager::getAllSignal() {
-    QList<PackageManager::AsulSignal> container;
-    foreach (const auto& sHost, signalList) {
-        QStringList sMap = signalMap[sHost];
-        foreach (const auto& sName, sMap) {
-            QString sArgu = signalArgu[sName];
-            container.append(AsulSignal(sHost, sName, sArgu));
-        }
-    }
-    return container;
-}
-
-QList<PackageManager::AsulSignal> PackageManager::getSignalsBySignalHost(QString sHost) {
-    QList<PackageManager::AsulSignal> container;
-    QStringList sMap = signalMap[sHost];
-    foreach (const auto& sName, sMap) {
-        QString sArgu = signalArgu[sName];
-        container.append(AsulSignal(sHost, sName, sArgu));
-    }
-    return container;
+    // ui->signalSlotTreeWidget->expandAll();
+    for (int i = 0; i < ui->signalSlotTreeWidget->topLevelItemCount(); i++)
+        ui->signalSlotTreeWidget->topLevelItem(i)->setExpanded(true);
 }
 
 void PackageManager::on_DebugClearBtn_clicked() {

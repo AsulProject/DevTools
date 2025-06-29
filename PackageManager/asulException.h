@@ -5,6 +5,8 @@
 #include <QString>
 
 class asulSubscription;
+class asulSignal;
+class asulSignalManager;
 
 // base exception
 namespace asulException {
@@ -15,19 +17,57 @@ public:
 };
 
 // circular dependency when building packages
-class circularDependencyError : public Exception {
+class circularDependency : public Exception {
     QList<QString> circle;
 
 public:
-    explicit circularDependencyError(const QList<QString>& C)
+    explicit circularDependency(const QList<QString>& C)
         : Exception("Circular Dependency Detected")
         , circle(C) {}
     inline const auto& getCircle() const { return this->circle; }
 };
 
+// the package author delacred duplicate signal Manager
+class duplicateSignalManagerDeclaration : public Exception {
+    asulSignalManager* signalManager;
+
+public:
+    explicit duplicateSignalManagerDeclaration(asulSignalManager* S)
+        : Exception("duplicate signalManager declaration was detetced")
+        , signalManager(S) {}
+    inline const auto& getSignalManager() const { return this->signalManager; }
+};
+
+// the package author delacred duplicate signal
+class duplicateSignalDeclaration : public Exception {
+    asulSignal* signal;
+
+public:
+    explicit duplicateSignalDeclaration(asulSignal* S)
+        : Exception("duplicate signal declaration was detetced")
+        , signal(S) {}
+    inline const auto& getSignal() const { return this->signal; }
+};
+
+// depend on unknown package
+// the dependency may be disabled
+// or deoendency pkg does not exsit
+class unkownDependency : public Exception {
+    QString host;
+    QString dependency;
+
+public:
+    explicit unkownDependency(const QString& H, const QString& D)
+        : Exception("unknown denpendency package")
+        , host(H)
+        , dependency(D) {}
+    inline const auto& getHost() const { return this->host; }
+    inline const auto& getDependency() const { return this->dependency; }
+};
+
 // subscribe to unknown signal
-// this should be an issue of the package itself
-// the author may forgot to add dependency for subscription
+// the author may forget to add dependency for subscription
+// or dependency was disabled
 class unkownSignal : public Exception {
     asulSubscription* subscription;
 

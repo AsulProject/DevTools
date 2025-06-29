@@ -8,7 +8,7 @@
         "author": "Asul Team",
         "license": "MIT",
         "dependencies": [
-            "asul.base.package@1.0.0"
+            "asul.base@1.0.0"
         ]
     },
     "provides": {

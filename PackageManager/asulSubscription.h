@@ -3,20 +3,24 @@
 
 #include <QList>
 #include <QMap>
+#include <QObject>
 #include <QString>
+#include <QVariant>
 
-class asulSubscription {
+class asulSubscription : public QObject {
+    Q_OBJECT
+
     QString host;
     QString signal;
     QList<QString> commandList;
-    QMap<QString, QString> argList;
+    QMap<QString, QVariant> argList;
 
 public:
-    asulSubscription(const QString& H, const QString& S);
+    asulSubscription(const QString& H, const QString& S, QObject* parent = nullptr);
 
     void addCommand(const QString& command);
     void addCommand(const QList<QString>& commands);
-    void addArg(const QString& key, const QString& value);
+    void addArg(const QString& key, const QVariant& value);
 
     auto getHost() const { return this->host; }
     auto getSignal() const { return this->signal; }

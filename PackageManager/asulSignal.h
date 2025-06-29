@@ -3,28 +3,30 @@
 
 #include <QFile>
 #include <QList>
+#include <QObject>
 #include <QString>
 
 class asulSubscription;
 
-class asulSignal {
+class asulSignal : public QObject {
+    Q_OBJECT
+
     QString host; // IaV
-    QString id;
-    QFile targetFile;
+    QString id;   // package.signal
     QList<asulSubscription*> subscriberList;
 
 public:
-    explicit asulSignal(const QString& H, const QString& I, const QString& T);
+    explicit asulSignal(const QString& H, const QString& I, QObject* parent = nullptr);
 
     void addSubscriber(asulSubscription* S);
     void clearSubscriber();
 
     auto getHost() const { return this->host; }
     auto getID() const { return this->id; }
-    auto getFullID() const { return this->host + "." + this->id; }
-    auto getAliasCommand() const;
-    const auto& getTargetFile() const { return this->targetFile; }
+    QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
 };
+
+Q_DECLARE_METATYPE(asulSignal*)
 
 #endif // ASULSIGNAL_H
