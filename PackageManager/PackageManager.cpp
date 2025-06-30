@@ -116,7 +116,7 @@ PackageManager::~PackageManager() {
     delete ui;
 }
 
-void PackageManager::collectPackageFromJSON(const QString & dirName,const QString& path) {
+void PackageManager::collectPackageFromJSON(const QString& dirName, const QString& path) {
     // qDebug()<<dirName;
     QFile metaDataFile(path);
     if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
@@ -182,7 +182,7 @@ void PackageManager::collectPackageFromJSON(const QString & dirName,const QStrin
 void PackageManager::collectPackageFromDir(const QString& path) {
     QDir packageDir = QApplication::applicationDirPath().replace("\\", "/") + "/" + path;
     for (const auto& info : packageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        this->collectPackageFromJSON(info.fileName() , packageDir.path() + "/" + info.fileName() + "/data.json");
+        this->collectPackageFromJSON(info.fileName(), packageDir.path() + "/" + info.fileName() + "/data.json");
     }
     ui->packageListVLayout->addStretch(); // Compress layout for beauty :)
 }
@@ -213,7 +213,7 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
         asulSignal* signal = var.value<asulSignal*>();
 
         ui->sArguLine->setText(signal->getAliasCommand());
-        ui->sHostLine->setText(signal->getHostPackage() + ":" + signal->getHostSignalManager()->getTargetFile().fileName());
+        ui->sHostLine->setText(signal->getHostPackage()->getName() + ":" + signal->getHostSignalManager()->getTargetFile().fileName());
     }
 }
 
