@@ -22,7 +22,7 @@ public:
     void addCommand(const QList<QString>& commands);
     void addArg(const QString& key, const QVariant& value);
 
-    auto getHost() const { return this->host; }
+    auto getHostPackage() const { return this->host; }
     auto getSignal() const { return this->signal; }
     const auto& getCommandList() const { return this->commandList; }
     const auto& getArgList() const { return this->argList; }

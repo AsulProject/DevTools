@@ -8,20 +8,23 @@
 
 class asulSubscription;
 
+#include "asulSignalManager.h"
+
 class asulSignal : public QObject {
     Q_OBJECT
 
-    QString host; // IaV
-    QString id;   // package.signal
+    asulSignalManager* host;
+    QString id; // package.signal
     QList<asulSubscription*> subscriberList;
 
 public:
-    explicit asulSignal(const QString& H, const QString& I, QObject* parent = nullptr);
+    explicit asulSignal(asulSignalManager* H, const QString& I, QObject* parent = nullptr);
 
     void addSubscriber(asulSubscription* S);
     void clearSubscriber();
 
-    auto getHost() const { return this->host; }
+    auto getHostSignalManager() const { return this->host; }
+    auto getHostPackage() const { return this->host->getHostPackage(); }
     auto getID() const { return this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }

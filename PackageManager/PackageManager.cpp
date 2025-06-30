@@ -193,7 +193,7 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
     if (var.metaType().id() == qMetaTypeId<asulSignal*>()) {
         asulSignal* signal = var.value<asulSignal*>();
         ui->sArguLine->setText(signal->getAliasCommand());
-        ui->sHostLine->setText(signal->getHost());
+        ui->sHostLine->setText(signal->getHostPackage());
     }
 }
 

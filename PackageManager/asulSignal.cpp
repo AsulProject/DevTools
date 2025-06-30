@@ -2,7 +2,7 @@
 
 #include "asulSubscription.h"
 
-asulSignal::asulSignal(const QString& H, const QString& I, QObject* parent)
+asulSignal::asulSignal(asulSignalManager* H, const QString& I, QObject* parent)
     : QObject(parent) {
     this->host = H;
     this->id = I;

@@ -2,6 +2,7 @@
 
 #include "asulException.h"
 #include "asulPackage.h"
+#include "asulSignal.h"
 
 #define DBG(x) this->debug(x)
 
@@ -42,7 +43,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         DBG("-- [signalManager] new signalManager " + registerName);
 
         // construct signalManager
-        asulSignalManager* signalManager = new asulSignalManager(targetFileLocation, this);
+        asulSignalManager* signalManager = new asulSignalManager(this->getName(), targetFileLocation, this);
         this->addSignalManager(signalManager);
 
         // check signalManager
@@ -54,7 +55,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
 
         for (const auto& entry : entriesArray) {
             // construct signal
-            asulSignal* signal = new asulSignal(this->getName(), this->getID() + "." + entry.toString(), signalManager);
+            asulSignal* signal = new asulSignal(signalManager, this->getID() + "." + entry.toString(), signalManager);
             signalManager->addSignal(signal);
 
             // check signal
