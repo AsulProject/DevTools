@@ -10,6 +10,8 @@
 
 #include "asulException.h"
 #include "asulSignal.h"
+#include "asulSignalManager.h"
+#include "asulSubscription.h"
 #include "ui_PackageManager.h"
 
 #define i18n(x) x
@@ -17,7 +19,6 @@
 #define ASULBASE "Asul/Base.cfg"
 #define ASULBASEPACKAGE "asul.base.package@1.0.0"
 #define DEBUGENV "DebugENV"
-
 
 PackageManager::PackageManager(QWidget* parent)
     : QMainWindow(parent)
@@ -28,7 +29,7 @@ PackageManager::PackageManager(QWidget* parent)
     ui->setupUi(this);
     connect(ui->signalSlotTreeWidget, &QTreeWidget::itemClicked, this, &PackageManager::onSignalItemClicked);
 
-    auto GenerateDebugBtn=[=](){
+    auto GenerateDebugBtn = [=]() {
         QPushButton* disableAll = new QPushButton(this);
         QPushButton* enableAll = new QPushButton(this);
         QPushButton* reloadPackage = new QPushButton(this);
@@ -46,8 +47,6 @@ PackageManager::PackageManager(QWidget* parent)
             this->packageManager.setAllPackageStatus(asulPackageManager::PACKAGE_STATE::ENABLE);
             buildPackage->click(); // reuse bulid code segment
         });
-
-
 
         // debug: reloadPackage
         reloadPackage->setText("[DEBUG] Reload package");
@@ -68,8 +67,7 @@ PackageManager::PackageManager(QWidget* parent)
 
             // re-Build packages imeediately PackageStatusChanged!
             buildPackage->click(); // reuse code :)
-            //re-Build End
-
+            // re-Build End
 
             clearLayout(ui->packageListVLayout);
             // ui->packageListVLayout->addWidget(disableAll);
@@ -79,15 +77,11 @@ PackageManager::PackageManager(QWidget* parent)
             this->collectPackageFromDir(DEBUGENV);
         });
 
-
-
         // debug: loadTreeView
         refreshTreeView->setText("[DEBUG] Refresh tree view");
         connect(refreshTreeView, &QPushButton::clicked, this, [=] {
             this->updateSignalTreeWidget();
         });
-
-
 
         // debug: buildPackage
         buildPackage->setText("[DEBUG] build packages");
@@ -123,7 +117,6 @@ PackageManager::~PackageManager() {
 }
 
 void PackageManager::collectPackageFromJSON(const QString& path) {
-
     QFile metaDataFile(path);
     if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
         DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
@@ -164,8 +157,6 @@ void PackageManager::collectPackageFromJSON(const QString& path) {
         this->packageManager.togglePacakgeStatus(currentPackage->getName());
     });
     connect(&this->packageManager, &asulPackageManager::onPackageStatusChanged, currentPackage, [=](const QString& IaV, asulPackageManager::PACKAGE_STATE status) {
-
-
         this->updateSignalTreeWidget(); // update TreeWidget immediately u click the packageManageBtn(statechange btn)
 
         if (IaV != currentPackage->getName())
@@ -185,7 +176,6 @@ void PackageManager::collectPackageFromJSON(const QString& path) {
     packageLayout->addWidget(packageManageBtn, 1);
 
     ui->packageListVLayout->addWidget(packageArea);
-
 }
 
 void PackageManager::collectPackageFromDir(const QString& path) {
@@ -213,7 +203,6 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
     Q_UNUSED(column);
     qDebug() << "signal item clicked" << Qt::endl;
 
-
     ui->sArguLine->setText("");
     ui->sHostLine->setText("");
 
@@ -222,9 +211,8 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
     if (var.metaType().id() == qMetaTypeId<asulSignal*>()) {
         asulSignal* signal = var.value<asulSignal*>();
 
-
         ui->sArguLine->setText(signal->getAliasCommand());
-        ui->sHostLine->setText(signal->getHostPackage());
+        ui->sHostLine->setText(signal->getHostPackage()->getName());
     }
 }
 
@@ -281,19 +269,6 @@ void PackageManager::updateSignalTreeWidget() {
             for (const auto& command : subscription->getCommandList()) {
                 QTreeWidgetItem* childItem = new QTreeWidgetItem(commandItem);
                 childItem->setText(0, command);
-            }
-
-            // show args only when arglist is not empty
-            const auto& args = subscription->getArgList();
-
-            if (args.isEmpty() == false) {
-                QTreeWidgetItem* argItem = new QTreeWidgetItem(parentItem);
-                argItem->setText(0, "args");
-
-                for (auto it = args.begin(); it != args.end(); it++) {
-                    QTreeWidgetItem* childItem = new QTreeWidgetItem(argItem);
-                    childItem->setText(0, it.key() + " : " + it.value().toString());
-                }
             }
         }
     }

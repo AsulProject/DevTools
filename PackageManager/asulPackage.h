@@ -8,8 +8,8 @@
 #include <QObject>
 #include <QString>
 
-#include "asulSignalManager.h"
-#include "asulSubscription.h"
+class asulSignalManager;
+class asulSubscription;
 
 class asulPackage : public QObject {
     Q_OBJECT

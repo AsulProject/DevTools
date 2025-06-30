@@ -7,25 +7,24 @@
 #include <QString>
 #include <QVariant>
 
+#include "asulPackage.h"
+
 class asulSubscription : public QObject {
     Q_OBJECT
 
-    QString host;
+    asulPackage* host;
     QString signal;
     QStringList commandList;
-    QMap<QString, QVariant> argList;
 
 public:
-    asulSubscription(const QString& H, const QString& S, QObject* parent = nullptr);
+    asulSubscription(asulPackage* H, const QString& S);
 
     void addCommand(const QString& command);
     void addCommand(const QList<QString>& commands);
-    void addArg(const QString& key, const QVariant& value);
 
     auto getHostPackage() const { return this->host; }
     auto getSignal() const { return this->signal; }
     const auto& getCommandList() const { return this->commandList; }
-    const auto& getArgList() const { return this->argList; }
 };
 
 #endif // ASULSUBSCRIPTION_H

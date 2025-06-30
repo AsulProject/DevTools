@@ -3,6 +3,7 @@
 #include "asulException.h"
 #include "asulPackage.h"
 #include "asulSignal.h"
+#include "asulSubscription.h"
 
 #define DBG(x) this->debug(x)
 
@@ -43,7 +44,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         DBG("-- [signalManager] new signalManager " + registerName);
 
         // construct signalManager
-        asulSignalManager* signalManager = new asulSignalManager(this->getName(), targetFileLocation, this);
+        asulSignalManager* signalManager = new asulSignalManager(this, targetFileLocation);
         this->addSignalManager(signalManager);
 
         // check signalManager
@@ -55,7 +56,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
 
         for (const auto& entry : entriesArray) {
             // construct signal
-            asulSignal* signal = new asulSignal(signalManager, this->getID() + "." + entry.toString(), signalManager);
+            asulSignal* signal = new asulSignal(signalManager, this->getID() + "." + entry.toString());
             signalManager->addSignal(signal);
 
             // check signal
@@ -80,7 +81,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         DBG("-- [subscription] -- signal: " + signal);
 
         // construct subscription object
-        asulSubscription* subscription = new asulSubscription(this->getName(), signal, this);
+        asulSubscription* subscription = new asulSubscription(this, signal);
         this->addSubscription(subscription);
 
         // add commands
@@ -88,16 +89,6 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         for (const auto& command : commandsArray) {
             subscription->addCommand(command.toString());
             DBG("-- [subscription] -- command: " + command.toString());
-        }
-
-        // add args
-        if (!subscriptionObj["args"].isUndefined()) {
-            const auto& args = subscriptionObj["args"].toObject().toVariantMap();
-
-            for (auto it = args.begin(); it != args.end(); it++) {
-                subscription->addArg(it.key(), it.value());
-                DBG("-- [subscription] -- arg: " + it.key() + " : " + it.value().toString());
-            }
         }
     }
 

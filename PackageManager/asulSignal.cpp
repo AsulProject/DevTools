@@ -2,8 +2,8 @@
 
 #include "asulSubscription.h"
 
-asulSignal::asulSignal(asulSignalManager* H, const QString& I, QObject* parent)
-    : QObject(parent) {
+asulSignal::asulSignal(asulSignalManager* H, const QString& I)
+    : QObject(H) {
     this->host = H;
     this->id = I;
 }
@@ -24,9 +24,9 @@ QString asulSignal::getAliasCommand() const {
     QString cmds = "";
 
     for (const auto& subscription : this->subscriberList) {
-        QStringList cmdList=subscription->getCommandList();
+        QStringList cmdList = subscription->getCommandList();
         cmdList.removeAll(QString(""));
-        cmds += cmdList.join(";")+";";
+        cmds += cmdList.join(";") + ";";
     }
 
     return QString("alias %1 \"%2\"").arg(this->id, cmds);

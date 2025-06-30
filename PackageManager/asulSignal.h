@@ -18,7 +18,7 @@ class asulSignal : public QObject {
     QList<asulSubscription*> subscriberList;
 
 public:
-    explicit asulSignal(asulSignalManager* H, const QString& I, QObject* parent = nullptr);
+    explicit asulSignal(asulSignalManager* H, const QString& I);
 
     void addSubscriber(asulSubscription* S);
     void clearSubscriber();
@@ -28,7 +28,6 @@ public:
     auto getID() const { return this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
-
 };
 
 Q_DECLARE_METATYPE(asulSignal*)

@@ -6,20 +6,21 @@
 #include <QObject>
 
 class asulSignal;
+#include "asulPackage.h"
 
 class asulSignalManager : public QObject {
     Q_OBJECT
 
-    QString host;
+    asulPackage* host;
     QFile targetFile;
     QList<asulSignal*> signalList;
 
 public:
-    explicit asulSignalManager(const QString& I, const QString& T, QObject* parent = nullptr);
+    explicit asulSignalManager(asulPackage* H, const QString& T);
 
     void addSignal(asulSignal* S);
 
-    const auto& getHostPackage() const { return this->host; }
+    auto getHostPackage() const { return this->host; }
     const auto& getTargetFile() const { return this->targetFile; }
     const auto& getSignalList() const { return this->signalList; }
 };
