@@ -20,7 +20,7 @@ public:
 
     void addSignal(asulSignal* S);
 
-    auto getHostPackage() const { return this->host; }
+    const asulPackage* getHostPackage() const { return this->host; }
     const auto& getTargetFile() const { return this->targetFile; }
     const auto& getSignalList() const { return this->signalList; }
 };

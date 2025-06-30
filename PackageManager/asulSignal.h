@@ -23,8 +23,8 @@ public:
     void addSubscriber(asulSubscription* S);
     void clearSubscriber();
 
-    auto getHostSignalManager() const { return this->host; }
-    auto getHostPackage() const { return this->host->getHostPackage(); }
+    const asulSignalManager* getHostSignalManager() const { return this->host; }
+    const asulPackage* getHostPackage() const { return this->host->getHostPackage(); }
     auto getID() const { return this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
