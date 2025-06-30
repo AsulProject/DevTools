@@ -12,7 +12,7 @@ class asulSubscription : public QObject {
 
     QString host;
     QString signal;
-    QList<QString> commandList;
+    QStringList commandList;
     QMap<QString, QVariant> argList;
 
 public:

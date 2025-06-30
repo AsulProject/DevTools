@@ -18,6 +18,7 @@
 #define ASULBASEPACKAGE "asul.base.package@1.0.0"
 #define DEBUGENV "DebugENV"
 
+
 PackageManager::PackageManager(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::PackageManager) {
@@ -27,56 +28,69 @@ PackageManager::PackageManager(QWidget* parent)
     ui->setupUi(this);
     connect(ui->signalSlotTreeWidget, &QTreeWidget::itemClicked, this, &PackageManager::onSignalItemClicked);
 
-    {
-        // debug: disableAll
+    auto GenerateDebugBtn=[=](){
         QPushButton* disableAll = new QPushButton(this);
+        QPushButton* enableAll = new QPushButton(this);
+        QPushButton* reloadPackage = new QPushButton(this);
+        QPushButton* refreshTreeView = new QPushButton(this);
+        QPushButton* buildPackage = new QPushButton(this);
+        // debug: disableAll
+        disableAll->setText("[DEBUG] Disable All");
         connect(disableAll, &QPushButton::clicked, this, [=] {
             this->packageManager.setAllPackageStatus(asulPackageManager::PACKAGE_STATE::DISABLE);
         });
-        disableAll->setText("[DEBUG] Disable All");
-        ui->packageListVLayout->addWidget(disableAll);
 
         // debug: enableAll
-        QPushButton* enableAll = new QPushButton(this);
+        enableAll->setText("[DEBUG] enable All");
         connect(enableAll, &QPushButton::clicked, this, [=] {
             this->packageManager.setAllPackageStatus(asulPackageManager::PACKAGE_STATE::ENABLE);
+            buildPackage->click(); // reuse bulid code segment
         });
-        enableAll->setText("[DEBUG] enable All");
-        ui->packageListVLayout->addWidget(enableAll);
+
+
 
         // debug: reloadPackage
-        QPushButton* reloadPackage = new QPushButton(this);
+        reloadPackage->setText("[DEBUG] Reload package");
         connect(reloadPackage, &QPushButton::clicked, this, [=] {
-            int count = ui->packageListVLayout->count();
-            for (int i = count - 1; i >= 0; --i) {
-                QLayoutItem* item = ui->packageListVLayout->itemAt(i);
-                if (QWidget* widget = item->widget()) {
-                    if (qobject_cast<QPushButton*>(widget) == nullptr) {
-                        // 移除布局项，删除控件
-                        QLayoutItem* removedItem = ui->packageListVLayout->takeAt(i);
-                        widget->deleteLater();
-                        delete removedItem;
-                    }
-                    // 保留按钮给debug用
-                }
-            }
+            // int count = ui->packageListVLayout->count();
+            // for (int i = count - 1; i >= 0; --i) {
+            //     QLayoutItem* item = ui->packageListVLayout->itemAt(i);
+            //     if (QWidget* widget = item->widget()) {
+            //         if (qobject_cast<QPushButton*>(widget) == nullptr) {
+            //             // 移除布局项，删除控件
+            //             QLayoutItem* removedItem = ui->packageListVLayout->takeAt(i);
+            //             widget->deleteLater();
+            //             delete removedItem;
+            //         }
+            //         // 保留按钮给debug用
+            //     }
+            // }
+
+            // re-Build packages imeediately PackageStatusChanged!
+            buildPackage->click(); // reuse code :)
+            //re-Build End
+
+
+            clearLayout(ui->packageListVLayout);
+            // ui->packageListVLayout->addWidget(disableAll);
+
             this->packageManager.clear();
             // 重新收集包
             this->collectPackageFromDir(DEBUGENV);
         });
-        reloadPackage->setText("[DEBUG] Reload package");
-        ui->packageListVLayout->addWidget(reloadPackage);
+
+
 
         // debug: loadTreeView
-        QPushButton* refreshTreeView = new QPushButton(this);
+        refreshTreeView->setText("[DEBUG] Refresh tree view");
         connect(refreshTreeView, &QPushButton::clicked, this, [=] {
             this->updateSignalTreeWidget();
         });
-        refreshTreeView->setText("[DEBUG] Refresh tree view");
-        ui->packageListVLayout->addWidget(refreshTreeView);
+
+
 
         // debug: buildPackage
-        QPushButton* buildPackage = new QPushButton(this);
+        buildPackage->setText("[DEBUG] build packages");
         connect(buildPackage, &QPushButton::clicked, this, [=] {
             DBG("building packages...");
             try {
@@ -90,9 +104,15 @@ PackageManager::PackageManager(QWidget* parent)
                 DBG("[ERROR] " + QString(err.what()));
             }
         });
-        buildPackage->setText("[DEBUG] build packages");
-        ui->packageListVLayout->addWidget(buildPackage);
-    }
+
+        ui->DebugVLayout->addWidget(disableAll);
+        ui->DebugVLayout->addWidget(enableAll);
+        ui->DebugVLayout->addWidget(reloadPackage);
+        ui->DebugVLayout->addWidget(refreshTreeView);
+        ui->DebugVLayout->addWidget(buildPackage);
+    };
+
+    GenerateDebugBtn();
 
     // collectPackage
     this->collectPackageFromDir(DEBUGENV);
@@ -103,6 +123,7 @@ PackageManager::~PackageManager() {
 }
 
 void PackageManager::collectPackageFromJSON(const QString& path) {
+
     QFile metaDataFile(path);
     if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
         DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
@@ -143,6 +164,10 @@ void PackageManager::collectPackageFromJSON(const QString& path) {
         this->packageManager.togglePacakgeStatus(currentPackage->getName());
     });
     connect(&this->packageManager, &asulPackageManager::onPackageStatusChanged, currentPackage, [=](const QString& IaV, asulPackageManager::PACKAGE_STATE status) {
+
+
+        this->updateSignalTreeWidget(); // update TreeWidget immediately u click the packageManageBtn(statechange btn)
+
         if (IaV != currentPackage->getName())
             return;
 
@@ -158,7 +183,9 @@ void PackageManager::collectPackageFromJSON(const QString& path) {
     // add to ui
     packageLayout->addWidget(packageIDLine, 9);
     packageLayout->addWidget(packageManageBtn, 1);
+
     ui->packageListVLayout->addWidget(packageArea);
+
 }
 
 void PackageManager::collectPackageFromDir(const QString& path) {
@@ -166,6 +193,7 @@ void PackageManager::collectPackageFromDir(const QString& path) {
     for (const auto& info : packageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         this->collectPackageFromJSON(packageDir.path() + "/" + info.fileName() + "/data.json");
     }
+    ui->packageListVLayout->addStretch(); // Compress layout for beauty :)
 }
 
 void PackageManager::clearLayout(QLayout* layout) {
@@ -185,6 +213,7 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
     Q_UNUSED(column);
     qDebug() << "signal item clicked" << Qt::endl;
 
+
     ui->sArguLine->setText("");
     ui->sHostLine->setText("");
 
@@ -192,6 +221,8 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
 
     if (var.metaType().id() == qMetaTypeId<asulSignal*>()) {
         asulSignal* signal = var.value<asulSignal*>();
+
+
         ui->sArguLine->setText(signal->getAliasCommand());
         ui->sHostLine->setText(signal->getHostPackage());
     }

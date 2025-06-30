@@ -87,12 +87,23 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>200</y>
         <width>571</width>
-        <height>671</height>
+        <height>481</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="packageListVLayout"/>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>571</width>
+        <height>181</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="DebugVLayout"/>
      </widget>
     </widget>
    </widget>
@@ -152,7 +163,7 @@
      <x>0</x>
      <y>0</y>
      <width>1501</width>
-     <height>20</height>
+     <height>16</height>
     </rect>
    </property>
   </widget>

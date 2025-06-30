@@ -28,6 +28,7 @@ public:
     auto getID() const { return this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
+
 };
 
 Q_DECLARE_METATYPE(asulSignal*)

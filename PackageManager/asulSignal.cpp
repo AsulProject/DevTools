@@ -22,12 +22,12 @@ void asulSignal::clearSubscriber() {
 
 QString asulSignal::getAliasCommand() const {
     QString cmds = "";
+
     for (const auto& subscription : this->subscriberList) {
-        for (const auto& cmd : subscription->getCommandList()) {
-            if (cmds.isEmpty() == false)
-                cmds += ";";
-            cmds += cmd;
-        }
+        QStringList cmdList=subscription->getCommandList();
+        cmdList.removeAll(QString(""));
+        cmds += cmdList.join(";")+";";
     }
+
     return QString("alias %1 \"%2\"").arg(this->id, cmds);
 }
