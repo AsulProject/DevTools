@@ -7,9 +7,9 @@
 #include <QList>
 #include <QObject>
 #include <QString>
-
 class asulSignalManager;
 class asulSubscription;
+#include "stdafx.h"
 
 class asulPackage : public QObject {
     Q_OBJECT
@@ -17,10 +17,8 @@ class asulPackage : public QObject {
     QString id;
     QString version;
     QList<QString /*IaV*/> dependencyList;
-
     QList<asulSignalManager*> signalManagerList;
     QList<asulSubscription*> subscriptionList;
-
     void debug(const QString& msg);
 
 signals:
