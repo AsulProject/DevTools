@@ -11,8 +11,10 @@ class asulSubscription;
 class asulSignal : public QObject {
     Q_OBJECT
 
+
     QString host; // IaV
     QString id;   // package.signal
+    QString targetFileLocation; //package.signal[targetFileLocation];
     QList<asulSubscription*> subscriberList;
 
 public:
@@ -20,11 +22,11 @@ public:
 
     void addSubscriber(asulSubscription* S);
     void clearSubscriber();
-
     auto getHost() const { return this->host; }
     auto getID() const { return this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
+
 };
 
 Q_DECLARE_METATYPE(asulSignal*)

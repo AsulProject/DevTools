@@ -6,5 +6,6 @@ asulSignalManager::asulSignalManager(const QString& T, QObject* parent)
 }
 
 void asulSignalManager::addSignal(asulSignal* S) {
+
     this->signalList.append(S);
 }
