@@ -14,7 +14,7 @@ class asulSignal : public QObject {
     Q_OBJECT
 
     asulSignalManager* host;
-    QString id; // package.signal
+    QString id;
     QList<asulSubscription*> subscriberList;
 
 public:
@@ -25,7 +25,8 @@ public:
 
     const asulSignalManager* getHostSignalManager() const { return this->host; }
     const asulPackage* getHostPackage() const { return this->host->getHostPackage(); }
-    auto getID() const { return this->id; }
+    QString getID() const { return this->id; }
+    QString getFullID() const { return this->getHostPackage()->getID() + "." + this->id; }
     QString getAliasCommand() const;
     const auto& getSubscriberList() const { return this->subscriberList; }
 };

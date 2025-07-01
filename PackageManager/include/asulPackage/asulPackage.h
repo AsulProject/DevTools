@@ -43,12 +43,12 @@ public:
 
     inline auto getID() const { return this->id; }
     inline auto getVersion() const { return this->version; }
-    inline auto getName() const { return this->id + "@" + this->version; }
+    inline auto getFullID() const { return this->id + "@" + this->version; }
     inline const auto& getDependencyList() const { return this->dependencyList; }
     inline const auto& getSigalManagerList() const { return this->signalManagerList; }
     inline const auto& getSubcriptionList() const { return this->subscriptionList; }
 
-    QString toString() const { return this->getName(); }
+    QString toString() const { return this->getFullID(); }
 };
 
 #endif // ASULPACKAGE_H

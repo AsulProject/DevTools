@@ -20,12 +20,12 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
     this->signalManagerList.clear();
     this->subscriptionList.clear();
 
-    DBG("Reading package " + this->getName());
+    DBG("Reading package " + this->getFullID());
 
     // 处理 dependencies
     for (const auto& dependencyId : pData["dependencies"].toVariant().toStringList()) {
         // 提取依赖
-        DBG("-- [Dependencies] " + this->getName() + " -> " + dependencyId);
+        DBG("-- [Dependencies] " + this->getFullID() + " -> " + dependencyId);
         this->addDependency(dependencyId);
     }
 
@@ -39,7 +39,7 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         QString targetFileLocation = signalObj["targetFileLocation"].toString();
 
         // id for signal Manager
-        QString registerName = this->getName() + "/" + targetFileLocation;
+        QString registerName = this->getFullID() + "/" + targetFileLocation;
 
         DBG("-- [signalManager] new signalManager " + registerName);
 
@@ -56,17 +56,17 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
 
         for (const auto& entry : entriesArray) {
             // construct signal
-            asulSignal* signal = new asulSignal(signalManager, this->getID() + "." + entry.toString());
+            asulSignal* signal = new asulSignal(signalManager, entry.toString());
             signalManager->addSignal(signal);
 
             // check signal
-            if (loaded_signal.contains(signal->getID())) {
+            if (loaded_signal.contains(signal->getFullID())) {
                 // duplicate signal
                 throw asulException::duplicateSignalDeclaration(loaded_signal[registerName]);
             }
-            loaded_signal.insert(signal->getID(), signal);
+            loaded_signal.insert(signal->getFullID(), signal);
 
-            DBG("-- [signal] new signal " + signal->getID());
+            DBG("-- [signal] new signal " + signal->getFullID());
         }
     }
 
@@ -92,5 +92,5 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         }
     }
 
-    DBG("Reading package " + this->getName() + " successfully\n");
+    DBG("Reading package " + this->getFullID() + " successfully\n");
 }

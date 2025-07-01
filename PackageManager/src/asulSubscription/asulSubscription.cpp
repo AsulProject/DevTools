@@ -16,6 +16,6 @@ void asulSubscription::addCommand(const QString& command) {
     this->commandList.append(command);
 }
 
-void asulSubscription::addCommand(const QList<QString>& commands) {
+void asulSubscription::addCommand(const QStringList& commands) {
     this->commandList.append(commands);
 }

@@ -92,7 +92,7 @@ PackageManager::PackageManager(QWidget* parent)
                 this->packageManager.buildPackages();
                 DBG("building successfully!");
             } catch (const asulException::unkownSignal& err) {
-                DBG("[ERROR] " + QString(err.what()) + " " + err.getSubscription()->getSignal());
+                DBG("[ERROR] " + QString(err.what()) + " " + err.getSubscription()->getSignal() + ", host: " + err.getSubscription()->getHostPackage()->getFullID());
             } catch (const asulException::unkownDependency& err) {
                 DBG("[ERROR] " + QString(err.what()) + " " + err.getDependency());
             } catch (const asulException::Exception& err) {
@@ -106,15 +106,17 @@ PackageManager::PackageManager(QWidget* parent)
             this->packageManager.clear();
             this->clearLayout(ui->packageListVLayout);
 
-            constexpr int number = 5;
+            constexpr int number = 10;
 
-            const QList<asulPackage*>& list = asulPackage::generateRandomPackages(number, 3);
+            const QList<asulPackage*>& list = asulPackage::generateRandomPackages(number, 3, 2, 3);
 
             for (asulPackage* pkg : list) {
-                this->collectPackage(pkg->getName(), pkg);
+                this->collectPackage(pkg->getFullID(), pkg);
             }
 
             refreshTreeView->click();
+
+            enableAll->click();
         });
 
         ui->DebugVLayout->addWidget(disableAll);
@@ -143,19 +145,19 @@ void PackageManager::collectPackage(const QString& dirName, asulPackage* current
 
     QHBoxLayout* packageLayout = new QHBoxLayout(packageArea);
 
-    QLineEdit* packageIDLine = new QLineEdit(currentPackage->getName(), packageArea);
+    QLineEdit* packageIDLine = new QLineEdit(currentPackage->getFullID(), packageArea);
     packageIDLine->setReadOnly(true);
 
     QPushButton* packageManageBtn = new QPushButton(packageArea);
 
     // process status switch button
     connect(packageManageBtn, &QPushButton::clicked, currentPackage, [=]() {
-        this->packageManager.togglePackageStatus(currentPackage->getName());
+        this->packageManager.togglePackageStatus(currentPackage->getFullID());
     });
     connect(&this->packageManager, &asulPackageManager::onPackageStatusChanged, currentPackage, [=](const QString& IaV, asulPackageManager::PACKAGE_STATE status) {
         this->updateSignalTreeWidget(); // update TreeWidget immediately u click the packageManageBtn(statechange btn)
 
-        if (IaV != currentPackage->getName())
+        if (IaV != currentPackage->getFullID())
             return;
 
         if (status == asulPackageManager::PACKAGE_STATE::ENABLE)
@@ -235,7 +237,7 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
         asulSignal* signal = var.value<asulSignal*>();
 
         ui->sArguLine->setText(signal->getAliasCommand());
-        ui->sHostLine->setText(signal->getHostPackage()->getName() + ":" + signal->getHostSignalManager()->getTargetFile().fileName());
+        ui->sHostLine->setText(signal->getHostPackage()->getFullID() + ":" + signal->getHostSignalManager()->getTargetFile().fileName());
     }
 }
 
@@ -272,7 +274,7 @@ void PackageManager::updateSignalTreeWidget() {
 
             for (const auto& signal : signalManager->getSignalList()) {
                 QTreeWidgetItem* childItem = new QTreeWidgetItem(signalManagerItem);
-                childItem->setText(0, signal->getID());
+                childItem->setText(0, signal->getFullID());
                 childItem->setData(0, Qt::UserRole, QVariant::fromValue(signal));
             }
         }

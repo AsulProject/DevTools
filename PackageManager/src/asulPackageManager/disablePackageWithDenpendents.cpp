@@ -13,7 +13,7 @@ void asulPackageManager::disablePackageWithDenpendents(const QString& IaV) {
 
     for (const auto& pkg : this->getPackageList()) {
         for (const auto& dependency : pkg->getDependencyList()) {
-            edge[dependency].append(pkg->getName());
+            edge[dependency].append(pkg->getFullID());
         }
     }
 

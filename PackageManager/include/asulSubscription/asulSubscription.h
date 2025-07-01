@@ -20,7 +20,7 @@ public:
     asulSubscription(asulPackage* H, const QString& S);
 
     void addCommand(const QString& command);
-    void addCommand(const QList<QString>& commands);
+    void addCommand(const QStringList& commands);
 
     const asulPackage* getHostPackage() const { return this->host; }
     auto getSignal() const { return this->signal; }

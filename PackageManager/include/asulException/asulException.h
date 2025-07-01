@@ -18,10 +18,10 @@ public:
 
 // circular dependency when building packages
 class circularDependency : public Exception {
-    QList<QString> circle;
+    QStringList circle;
 
 public:
-    explicit circularDependency(const QList<QString>& C)
+    explicit circularDependency(const QStringList& C)
         : Exception("Circular Dependency Detected")
         , circle(C) {}
     inline const auto& getCircle() const { return this->circle; }

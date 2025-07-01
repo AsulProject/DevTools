@@ -8,7 +8,7 @@
 #include <queue>
 #include <vector>
 
-void checkCircularDependency(int packageCount, const std::vector<std::vector<int>>& edge, const QList<QString>& index_to_IaV) {
+void checkCircularDependency(int packageCount, const std::vector<std::vector<int>>& edge, const QStringList& index_to_IaV) {
     std::vector<int> checked(packageCount, 0); // packages which have been visited
     std::vector<int> instack(packageCount, 0); // packages which are in the dfs stack
     std::vector<int> stack(0);                 // packages along the path
@@ -25,7 +25,7 @@ void checkCircularDependency(int packageCount, const std::vector<std::vector<int
             if (instack[cur] == true) {
                 // find a circular dependency
 
-                QList<QString> path;
+                QStringList path;
                 for (const auto& index : stack) path.append(index_to_IaV[index]); // make index(int) -> IaV(QString) for exception
 
                 throw asulException::circularDependency(path);
@@ -87,7 +87,7 @@ std::vector<int> generateBuildingOrder(int packageCount, const std::vector<std::
 void asulPackageManager::buildPackages() {
     // 1. init package infomation
 
-    QList<QString> index_to_IaV;
+    QStringList index_to_IaV;
     QList<asulPackage*> index_to_ptr;
 
     for (auto it = this->packageList.begin(); it != this->packageList.end(); it++) {
@@ -151,11 +151,11 @@ void asulPackageManager::buildPackages() {
     // 5. load packages
     QMap<QString, asulSignal*> loaded_signal; // loaded signals
 
-    for (int cur = 0; cur < packageCount; cur++) {
+    for (auto cur : order) {
         // load it's signals
         for (const auto& signalManager : index_to_ptr[cur]->getSigalManagerList()) {
             for (const auto& signal : signalManager->getSignalList()) {
-                loaded_signal.insert(signal->getID(), signal);
+                loaded_signal.insert(signal->getFullID(), signal);
             }
         }
 
@@ -165,6 +165,7 @@ void asulPackageManager::buildPackages() {
             // the author may forget to add dependency
             // or dependency was disabled
             if (loaded_signal.contains(subscription->getSignal()) == false) {
+                qDebug() << loaded_signal << Qt::endl;
                 throw asulException::unkownSignal(subscription);
             }
 

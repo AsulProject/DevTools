@@ -11,11 +11,11 @@ asulPackageManager::~asulPackageManager() {
 // appends
 
 void asulPackageManager::addPackage(asulPackage* P, PACKAGE_STATE status) {
-    this->packageList.insert(P->getName(), P);
-    this->packageStatus.insert(P->getName(), status);
+    this->packageList.insert(P->getFullID(), P);
+    this->packageStatus.insert(P->getFullID(), status);
 
     // signal
-    emit this->onPackageStatusChanged(P->getName(), status);
+    emit this->onPackageStatusChanged(P->getFullID(), status);
 }
 
 // package state
