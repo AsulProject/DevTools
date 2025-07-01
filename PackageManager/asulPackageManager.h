@@ -34,6 +34,7 @@ public:
 
     void buildPackages();
 
+    QStringList testPackage(const QString& IaV) const;
     bool contain(const QString& IaV) const;
     void clear();
 

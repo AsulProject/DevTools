@@ -13,6 +13,7 @@ SOURCES += \
     asulPackage.cpp \
     asulPackageManager.cpp \
     asulPackageManager_buildPackages.cpp \
+    asulPackageManager_testPackage.cpp \
     asulPackage_initializeFromJSON.cpp \
     asulSignal.cpp \
     asulSignalManager.cpp \
