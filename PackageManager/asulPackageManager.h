@@ -29,7 +29,7 @@ public:
     void addPackage(asulPackage* P, PACKAGE_STATE status = PACKAGE_STATE::ENABLE);
 
     void setPackageStatus(const QString& IaV, PACKAGE_STATE status);
-    void togglePacakgeStatus(const QString& IaV);
+    void togglePackageStatus(const QString& IaV);
     void setAllPackageStatus(PACKAGE_STATE status);
 
     void buildPackages();

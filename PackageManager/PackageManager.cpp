@@ -155,7 +155,7 @@ void PackageManager::collectPackageFromJSON(const QString& dirName, const QStrin
 
     // process status switch button
     connect(packageManageBtn, &QPushButton::clicked, currentPackage, [=]() {
-        this->packageManager.togglePacakgeStatus(currentPackage->getName());
+        this->packageManager.togglePackageStatus(currentPackage->getName());
     });
     connect(&this->packageManager, &asulPackageManager::onPackageStatusChanged, currentPackage, [=](const QString& IaV, asulPackageManager::PACKAGE_STATE status) {
         this->updateSignalTreeWidget(); // update TreeWidget immediately u click the packageManageBtn(statechange btn)

@@ -32,7 +32,7 @@ void asulPackageManager::setPackageStatus(const QString& IaV, PACKAGE_STATE stat
     emit this->onPackageStatusChanged(IaV, status);
 }
 
-void asulPackageManager::togglePacakgeStatus(const QString& IaV) {
+void asulPackageManager::togglePackageStatus(const QString& IaV) {
     // check if this package exsits
     if (this->packageList.contains(IaV) == false) {
         throw asulException::Exception(QString("package '%1' does not exsit!").arg(IaV));
