@@ -4,7 +4,9 @@
 asulPackageManager::asulPackageManager(QObject* parent)
     : QObject(parent) {}
 
-asulPackageManager::~asulPackageManager() {}
+asulPackageManager::~asulPackageManager() {
+    this->clear();
+}
 
 // appends
 
