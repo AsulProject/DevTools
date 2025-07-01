@@ -1,4 +1,4 @@
-#include "asulSignalManager.h"
+#include <asulSignalManager/asulSignalManager.h>
 
 asulSignalManager::asulSignalManager(asulPackage* H, const QString& T)
     : QObject(H)

@@ -1,6 +1,8 @@
 #ifndef ASULPACKAGE_H
 #define ASULPACKAGE_H
 
+#include <stdafx/stdafx.h>
+
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -9,7 +11,6 @@
 #include <QString>
 class asulSignalManager;
 class asulSubscription;
-#include "stdafx.h"
 
 class asulPackage : public QObject {
     Q_OBJECT

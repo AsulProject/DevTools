@@ -1,6 +1,6 @@
-#include "QStringModifier.h"
+#include <QStringModifier/QStringModifier.h>
 
-#include "QDebug"
+#include <QDebug>
 
 QStringModifier::QStringModifier(QObject* parent)
     : QObject{parent} {

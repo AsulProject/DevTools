@@ -1,4 +1,4 @@
-#include "asulPackage.h"
+#include <asulPackage/asulPackage.h>
 
 #include <QStringList>
 

@@ -1,9 +1,8 @@
-#include "asulSubscription.h"
+#include <asulException/asulException.h>
+#include <asulSubscription/asulSubscription.h>
 
 #include <QDebug>
 #include <QVariant>
-
-#include "asulException.h"
 
 asulSubscription::asulSubscription(asulPackage* H, const QString& S)
     : QObject(H) {

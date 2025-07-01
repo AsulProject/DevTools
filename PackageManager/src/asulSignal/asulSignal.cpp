@@ -1,6 +1,5 @@
-#include "asulSignal.h"
-
-#include "asulSubscription.h"
+#include <asulSignal/asulSignal.h>
+#include <asulSubscription/asulSubscription.h>
 
 asulSignal::asulSignal(asulSignalManager* H, const QString& I)
     : QObject(H) {

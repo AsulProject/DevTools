@@ -1,12 +1,13 @@
 #ifndef ASULSIGNALMANAGER_H
 #define ASULSIGNALMANAGER_H
 
+#include <asulPackage/asulPackage.h>
+
 #include <QFile>
 #include <QList>
 #include <QObject>
 
 class asulSignal;
-#include "asulPackage.h"
 
 class asulSignalManager : public QObject {
     Q_OBJECT

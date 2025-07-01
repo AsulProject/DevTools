@@ -1,6 +1,5 @@
-#include "asulPackageManager.h"
-
-#include "asulException.h"
+#include <asulException/asulException.h>
+#include <asulPackageManager/asulPackageManager.h>
 
 asulPackageManager::asulPackageManager(QObject* parent)
     : QObject(parent) {}

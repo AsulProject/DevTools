@@ -1,10 +1,10 @@
 #ifndef ASULPACKAGEMANAGER_H
 #define ASULPACKAGEMANAGER_H
 
+#include <asulPackage/asulPackage.h>
+
 #include <QMap>
 #include <QObject>
-
-#include "asulPackage.h"
 
 class asulPackageManager : public QObject {
     Q_OBJECT
@@ -30,6 +30,7 @@ public:
 
     void setPackageStatus(const QString& IaV, PACKAGE_STATE status);
     void togglePackageStatus(const QString& IaV);
+    void enablePackageWithDenpendencies(const QString& IaV);
     void setAllPackageStatus(PACKAGE_STATE status);
 
     void buildPackages();

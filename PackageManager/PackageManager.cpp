@@ -1,5 +1,11 @@
 #include "PackageManager.h"
 
+#include <asulException/asulException.h>
+#include <asulSignal/asulSignal.h>
+#include <asulSignalManager/asulSignalManager.h>
+#include <asulSubscription/asulSubscription.h>
+#include <ui_PackageManager.h>
+
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
@@ -7,13 +13,6 @@
 #include <QJsonObject>
 #include <QQueue>
 #include <QTimer>
-
-#include "asulException.h"
-#include "asulSignal.h"
-#include "asulSignalManager.h"
-#include "asulSubscription.h"
-#include "ui_PackageManager.h"
-
 #define i18n(x) x
 #define DBG(x) ui->debugPlainText->appendPlainText(x)
 #define ASULBASE "Asul/Base.cfg"

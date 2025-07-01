@@ -1,13 +1,13 @@
 #ifndef ASULSUBSCRIPTION_H
 #define ASULSUBSCRIPTION_H
 
+#include <asulPackage/asulPackage.h>
+
 #include <QList>
 #include <QMap>
 #include <QObject>
 #include <QString>
 #include <QVariant>
-
-#include "asulPackage.h"
 
 class asulSubscription : public QObject {
     Q_OBJECT

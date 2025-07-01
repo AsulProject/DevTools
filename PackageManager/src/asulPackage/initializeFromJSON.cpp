@@ -1,9 +1,9 @@
-#include <QDebug>
+#include <asulException/asulException.h>
+#include <asulPackage/asulPackage.h>
+#include <asulSignal/asulSignal.h>
+#include <asulSubscription/asulSubscription.h>
 
-#include "asulException.h"
-#include "asulPackage.h"
-#include "asulSignal.h"
-#include "asulSubscription.h"
+#include <QDebug>
 
 #define DBG(x) this->debug(x)
 

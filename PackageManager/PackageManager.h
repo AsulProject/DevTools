@@ -1,11 +1,11 @@
 #ifndef PACKAGEMANAGER_H
 #define PACKAGEMANAGER_H
 
+#include <asulPackageManager/asulPackageManager.h>
+
 #include <QMainWindow>
 #include <QQueue>
 #include <QTreeWidget>
-
-#include "asulPackageManager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,7 +22,7 @@ public:
     PackageManager(QWidget* parent = nullptr);
     ~PackageManager();
 
-    void collectPackageFromJSON(const QString & dirName,const QString& data);
+    void collectPackageFromJSON(const QString& dirName, const QString& data);
     void collectPackageFromDir(const QString& path);
 
     void clearLayout(QLayout* layout);

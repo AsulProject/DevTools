@@ -1,10 +1,10 @@
 #ifndef QSTRINGMODIFIER_H
 #define QSTRINGMODIFIER_H
 
+#include <stdafx/stdafx.h>
+
 #include <QMap>
 #include <QObject>
-
-#include "stdafx.h"
 
 class QStringModifier : public QObject {
     Q_OBJECT

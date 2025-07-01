@@ -1,12 +1,12 @@
+#include <asulException/asulException.h>
+#include <asulPackageManager/asulPackageManager.h>
+#include <asulSignal/asulSignal.h>
+#include <asulSubscription/asulSubscription.h>
+
 #include <QDebug>
 #include <QList>
 #include <queue>
 #include <vector>
-
-#include "asulException.h"
-#include "asulPackageManager.h"
-#include "asulSignal.h"
-#include "asulSubscription.h"
 
 void checkCircularDependency(int packageCount, const std::vector<std::vector<int>>& edge, const QList<QString>& index_to_IaV) {
     std::vector<int> checked(packageCount, 0); // packages which have been visited

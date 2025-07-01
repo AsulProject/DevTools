@@ -1,9 +1,9 @@
+#include <asulPackageManager/asulPackageManager.h>
+
 #include <QList>
 #include <QSet>
 #include <QString>
 #include <QStringList>
-
-#include "asulPackageManager.h"
 
 QStringList asulPackageManager::testPackage(const QString& IaV) const {
     QStringList list;
