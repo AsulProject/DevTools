@@ -34,11 +34,10 @@ public:
     void setAllPackageStatus(PACKAGE_STATE status);
 
     void buildPackages();
-
-    QStringList testPackage(const QString& IaV) const;
     bool contain(const QString& IaV) const;
     void clear();
 
+    QStringList getMissingDependencies(const QString& IaV) const;
     PACKAGE_STATE getPackageStatus(const QString& IaV) const;
     asulPackage* getPackage(const QString& IaV) const;
 

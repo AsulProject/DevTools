@@ -5,7 +5,7 @@
 #include <QString>
 #include <QStringList>
 
-QStringList asulPackageManager::testPackage(const QString& IaV) const {
+QStringList asulPackageManager::getMissingDependencies(const QString& IaV) const {
     QStringList list;
 
     QSet<QString> visited;
