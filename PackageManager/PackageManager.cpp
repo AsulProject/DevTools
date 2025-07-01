@@ -34,6 +34,8 @@ PackageManager::PackageManager(QWidget* parent)
         QPushButton* reloadPackage = new QPushButton(this);
         QPushButton* refreshTreeView = new QPushButton(this);
         QPushButton* buildPackage = new QPushButton(this);
+        QPushButton* generateRandomPackages = new QPushButton(this);
+
         // debug: disableAll
         disableAll->setText("[DEBUG] Disable All");
         connect(disableAll, &QPushButton::clicked, this, [=] {
@@ -98,11 +100,29 @@ PackageManager::PackageManager(QWidget* parent)
             }
         });
 
+        // debug: generateRandomPackages
+        generateRandomPackages->setText("[DEBUG] generate random packages");
+        connect(generateRandomPackages, &QPushButton::clicked, this, [=] {
+            this->packageManager.clear();
+            this->clearLayout(ui->packageListVLayout);
+
+            constexpr int number = 5;
+
+            const QList<asulPackage*>& list = asulPackage::generateRandomPackages(number, 3);
+
+            for (asulPackage* pkg : list) {
+                this->collectPackage(pkg->getName(), pkg);
+            }
+
+            refreshTreeView->click();
+        });
+
         ui->DebugVLayout->addWidget(disableAll);
         ui->DebugVLayout->addWidget(enableAll);
         ui->DebugVLayout->addWidget(reloadPackage);
         ui->DebugVLayout->addWidget(refreshTreeView);
         ui->DebugVLayout->addWidget(buildPackage);
+        ui->DebugVLayout->addWidget(generateRandomPackages);
     };
 
     GenerateDebugBtn();
@@ -115,32 +135,8 @@ PackageManager::~PackageManager() {
     delete ui;
 }
 
-void PackageManager::collectPackageFromJSON(const QString& dirName, const QString& path) {
+void PackageManager::collectPackage(const QString& dirName, asulPackage* currentPackage) {
     // qDebug()<<dirName;
-    QFile metaDataFile(path);
-    if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
-        DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
-        return;
-    }
-    QString originContent = metaDataFile.readAll();
-    metaDataFile.close();
-
-    // construct package object
-    asulPackage* currentPackage = new asulPackage(&this->packageManager);
-
-    // connect debug msg
-    connect(currentPackage, &asulPackage::sendMsg, this, [=](const QString& msg) {
-        DBG(msg);
-    });
-
-    // init form JSON
-    try {
-        currentPackage->initializeFromJSON(QJsonDocument::fromJson(originContent.toUtf8()).object());
-    } catch (const asulException::Exception& err) {
-        DBG("[ERROR] " + QString(err.what()));
-        delete currentPackage;
-        return;
-    }
 
     // ui
     QWidget* packageArea = new QWidget(this);
@@ -181,7 +177,34 @@ void PackageManager::collectPackageFromJSON(const QString& dirName, const QStrin
 void PackageManager::collectPackageFromDir(const QString& path) {
     QDir packageDir = QApplication::applicationDirPath().replace("\\", "/") + "/" + path;
     for (const auto& info : packageDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        this->collectPackageFromJSON(info.fileName(), packageDir.path() + "/" + info.fileName() + "/data.json");
+        QString path = packageDir.path() + "/" + info.fileName() + "/data.json";
+
+        QFile metaDataFile(path);
+        if (!metaDataFile.exists() || !metaDataFile.open(QIODevice::ReadOnly)) {
+            DBG("Cannot Read " + metaDataFile.fileName() + ": " + metaDataFile.errorString());
+            return;
+        }
+        QString originContent = metaDataFile.readAll();
+        metaDataFile.close();
+
+        // construct package object
+        asulPackage* currentPackage = new asulPackage(&this->packageManager);
+
+        // connect debug msg
+        connect(currentPackage, &asulPackage::sendMsg, this, [=](const QString& msg) {
+            DBG(msg);
+        });
+
+        // init form JSON
+        try {
+            currentPackage->initializeFromJSON(QJsonDocument::fromJson(originContent.toUtf8()).object());
+        } catch (const asulException::Exception& err) {
+            DBG("[ERROR] " + QString(err.what()));
+            delete currentPackage;
+            continue;
+        }
+
+        this->collectPackage(info.fileName(), currentPackage);
     }
     ui->packageListVLayout->addStretch(); // Compress layout for beauty :)
 }

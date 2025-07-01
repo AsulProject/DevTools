@@ -31,7 +31,12 @@ public:
     explicit asulPackage(QObject* parent = nullptr);
     ~asulPackage();
 
+    static QList<asulPackage*> generateRandomPackages(int number = 1, int _max_dependency = false, int _max_signal = false, int _max_subscription = false);
+
     void initializeFromJSON(const QJsonObject& pRoot);
+    void setID(const QString& I) { this->id = I; }
+    void setVersion(const QString& V) { this->version = V; }
+
     void addDependency(const QString& IaV);
     void addSignalManager(asulSignalManager* SM);
     void addSubscription(asulSubscription* S);

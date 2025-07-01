@@ -22,7 +22,7 @@ public:
     PackageManager(QWidget* parent = nullptr);
     ~PackageManager();
 
-    void collectPackageFromJSON(const QString& dirName, const QString& data);
+    void collectPackage(const QString& dirName, asulPackage* currentPackage);
     void collectPackageFromDir(const QString& path);
 
     void clearLayout(QLayout* layout);
