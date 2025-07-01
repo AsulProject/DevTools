@@ -31,6 +31,7 @@ public:
     void setPackageStatus(const QString& IaV, PACKAGE_STATE status);
     void togglePackageStatus(const QString& IaV);
     void enablePackageWithDenpendencies(const QString& IaV);
+    void disablePackageWithDenpendents(const QString& IaV);
     void setAllPackageStatus(PACKAGE_STATE status);
 
     void buildPackages();

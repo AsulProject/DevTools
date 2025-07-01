@@ -10,7 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    PackageManager.cpp
+    PackageManager.cpp \
 
 HEADERS += \
     PackageManager.h \
