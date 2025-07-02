@@ -26,16 +26,15 @@ signals:
     void sendMsg(const QString& msg);
 
 public:
-    explicit asulPackage(const QString& I, const QString& V, QObject* parent = nullptr);
-    explicit asulPackage(const QString& IaV, QObject* parent = nullptr);
     explicit asulPackage(QObject* parent = nullptr);
     ~asulPackage();
 
     static QList<asulPackage*> generateRandomPackages(int number = 1, int _max_dependency = false, int _max_signal = false, int _max_subscription = false);
 
     void initializeFromJSON(const QJsonObject& pRoot);
-    void setID(const QString& I) { this->id = I; }
-    void setVersion(const QString& V) { this->version = V; }
+    inline void setID(const QString& I) { this->id = I; }
+    inline void setVersion(const QString& V) { this->version = V; }
+    void setIaV(const QString& IaV);
 
     void addDependency(const QString& IaV);
     void addSignalManager(asulSignalManager* SM);

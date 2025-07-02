@@ -6,14 +6,7 @@ void asulPackage::debug(const QString& msg) {
     emit this->sendMsg("[DEBUG] " + msg);
 }
 
-asulPackage::asulPackage(const QString& I, const QString& V, QObject* parent)
-    : QObject(parent) {
-    this->id = I;
-    this->version = V;
-}
-
-asulPackage::asulPackage(const QString& IaV, QObject* parent)
-    : QObject(parent) {
+void asulPackage::setIaV(const QString& IaV) {
     QStringList parts = IaV.split("@");
     this->id = (parts.size() > 0) ? parts[0] : "";
     this->version = (parts.size() > 1) ? parts[1] : "";
