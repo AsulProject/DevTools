@@ -1,4 +1,6 @@
 #include <asulPackage/asulPackage.h>
+#include <asulSignalManager/asulSignalManager.h>
+#include <asulSubscription/asulSubscription.h>
 
 #include <QStringList>
 
@@ -26,8 +28,10 @@ void asulPackage::addDependency(const QString& IaV) {
 
 void asulPackage::addSignalManager(asulSignalManager* SM) {
     this->signalManagerList.append(SM);
+    SM->setParent(this);
 }
 
 void asulPackage::addSubscription(asulSubscription* S) {
     this->subscriptionList.append(S);
+    S->setParent(this);
 }

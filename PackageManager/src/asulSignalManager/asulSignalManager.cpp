@@ -1,3 +1,4 @@
+#include <asulSignal/asulSignal.h>
 #include <asulSignalManager/asulSignalManager.h>
 
 asulSignalManager::asulSignalManager(asulPackage* H, const QString& T)
@@ -8,4 +9,5 @@ asulSignalManager::asulSignalManager(asulPackage* H, const QString& T)
 
 void asulSignalManager::addSignal(asulSignal* S) {
     this->signalList.append(S);
+    S->setParent(this);
 }

@@ -4,13 +4,13 @@
 asulPackageManager::asulPackageManager(QObject* parent)
     : QObject(parent) {}
 
-asulPackageManager::~asulPackageManager() {
-    this->clear();
-}
+asulPackageManager::~asulPackageManager() {}
 
 // appends
 
 void asulPackageManager::addPackage(asulPackage* P, PACKAGE_STATE status) {
+    P->setParent(this);
+
     this->packageList.insert(P->getFullID(), P);
     this->packageStatus.insert(P->getFullID(), status);
 
