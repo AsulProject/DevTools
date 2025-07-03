@@ -10,7 +10,6 @@ class asulVirtualFile : public asulVirtualNode {
     Q_OBJECT
 
     QString name;
-
     QString content;
 
 public:

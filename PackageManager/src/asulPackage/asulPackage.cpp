@@ -28,10 +28,10 @@ void asulPackage::addDependency(const QString& IaV) {
 
 void asulPackage::addSignalManager(asulSignalManager* SM) {
     this->signalManagerList.append(SM);
-    SM->setParent(this);
+    SM->setHost(this);
 }
 
 void asulPackage::addSubscription(asulSubscription* S) {
     this->subscriptionList.append(S);
-    S->setParent(this);
+    S->setHost(this);
 }

@@ -12,17 +12,19 @@
 class asulSubscription : public QObject {
     Q_OBJECT
 
-    asulPackage* host;
     QString signal;
     QStringList commandList;
 
 public:
-    asulSubscription(asulPackage* H, const QString& S);
+    asulSubscription();
+
+    inline void setHost(asulPackage* H) { QObject::setParent(H); }
+    inline void setSignal(const QString& S) { this->signal = S; }
 
     void addCommand(const QString& command);
     void addCommand(const QStringList& commands);
 
-    const asulPackage* getHostPackage() const { return this->host; }
+    const asulPackage* getHostPackage() const { return static_cast<asulPackage*>(this->parent()); }
     auto getSignal() const { return this->signal; }
     const auto& getCommandList() const { return this->commandList; }
 };

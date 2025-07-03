@@ -73,11 +73,15 @@ QList<asulPackage*> asulPackage::generateRandomPackages(int number, int _max_dep
                     id = "randomSIG_" + randomString(id_length);
                 }
 
-                asulSignalManager* signalManager = new asulSignalManager(pkg, id + ".cfg");
-                asulSignal* signal = new asulSignal(signalManager, id);
+                asulSignalManager* signalManager = new asulSignalManager();
+                asulSignal* signal = new asulSignal();
+
+                signalManager->setTargetFile(id + ".cfg");
+                signal->setID(id);
 
                 signalManager->addSignal(signal);
                 pkg->addSignalManager(signalManager);
+
                 signal_list.append(signal->getFullID());
             }
         }
@@ -100,7 +104,8 @@ QList<asulPackage*> asulPackage::generateRandomPackages(int number, int _max_dep
             std::vector<int> indexs = generateRandomIndex(pre_number, subscription_number);
 
             for (auto j : indexs) {
-                asulSubscription* subscription = new asulSubscription(pkg, _signals[j]);
+                asulSubscription* subscription = new asulSubscription();
+                subscription->setSignal(_signals[j]);
                 subscription->addCommand(randomString(3));
                 pkg->addSubscription(subscription);
             }

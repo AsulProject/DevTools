@@ -12,16 +12,18 @@ class asulSignal;
 class asulSignalManager : public QObject {
     Q_OBJECT
 
-    asulPackage* host;
-    QFile targetFile;
+    QString targetFile;
     QList<asulSignal*> signalList;
 
 public:
-    explicit asulSignalManager(asulPackage* H, const QString& T);
+    explicit asulSignalManager();
+
+    inline void setHost(asulPackage* H) { QObject::setParent(H); }
+    inline void setTargetFile(const QString& T) { this->targetFile = T; }
 
     void addSignal(asulSignal* S);
 
-    const asulPackage* getHostPackage() const { return this->host; }
+    const asulPackage* getHostPackage() const { return static_cast<asulPackage*>(this->parent()); }
     const auto& getTargetFile() const { return this->targetFile; }
     const auto& getSignalList() const { return this->signalList; }
 };

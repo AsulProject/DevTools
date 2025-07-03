@@ -44,7 +44,8 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         DBG("-- [signalManager] new signalManager " + registerName);
 
         // construct signalManager
-        asulSignalManager* signalManager = new asulSignalManager(this, targetFileLocation);
+        asulSignalManager* signalManager = new asulSignalManager();
+        signalManager->setTargetFile(targetFileLocation);
         this->addSignalManager(signalManager);
 
         // check signalManager
@@ -56,7 +57,8 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
 
         for (const auto& entry : entriesArray) {
             // construct signal
-            asulSignal* signal = new asulSignal(signalManager, entry.toString());
+            asulSignal* signal = new asulSignal();
+            signal->setID(entry.toString());
             signalManager->addSignal(signal);
 
             // check signal
@@ -81,7 +83,8 @@ void asulPackage::initializeFromJSON(const QJsonObject& pRoot) {
         DBG("-- [subscription] -- signal: " + signal);
 
         // construct subscription object
-        asulSubscription* subscription = new asulSubscription(this, signal);
+        asulSubscription* subscription = new asulSubscription();
+        subscription->setSignal(signal);
         this->addSubscription(subscription);
 
         // add commands

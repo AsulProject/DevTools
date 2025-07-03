@@ -4,10 +4,8 @@
 #include <QDebug>
 #include <QVariant>
 
-asulSubscription::asulSubscription(asulPackage* H, const QString& S)
-    : QObject(H) {
-    this->host = H;
-    this->signal = S;
+asulSubscription::asulSubscription()
+    : QObject(nullptr) {
 }
 
 // appends

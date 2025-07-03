@@ -1,11 +1,8 @@
 #include <asulSignal/asulSignal.h>
 #include <asulSubscription/asulSubscription.h>
 
-asulSignal::asulSignal(asulSignalManager* H, const QString& I)
-    : QObject(H) {
-    this->host = H;
-    this->id = I;
-}
+asulSignal::asulSignal()
+    : QObject(nullptr) {}
 
 // adds
 

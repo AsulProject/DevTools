@@ -252,7 +252,7 @@ void PackageManager::onSignalItemClicked(QTreeWidgetItem* item, int column) {
         asulSignal* signal = var.value<asulSignal*>();
 
         ui->sArguLine->setText(signal->getAliasCommand());
-        ui->sHostLine->setText(signal->getHostPackage()->getFullID() + ":" + signal->getHostSignalManager()->getTargetFile().fileName());
+        ui->sHostLine->setText(signal->getHostPackage()->getFullID() + ":" + signal->getHostSignalManager()->getTargetFile());
     }
 }
 
@@ -285,7 +285,7 @@ void PackageManager::updateSignalTreeWidget() {
 
         for (const auto& signalManager : this->packageManager.getPackage(IaV)->getSigalManagerList()) {
             QTreeWidgetItem* signalManagerItem = new QTreeWidgetItem(signalItem);
-            signalManagerItem->setText(0, signalManager->getTargetFile().fileName());
+            signalManagerItem->setText(0, signalManager->getTargetFile());
 
             for (const auto& signal : signalManager->getSignalList()) {
                 QTreeWidgetItem* childItem = new QTreeWidgetItem(signalManagerItem);
