@@ -149,6 +149,11 @@ void PackageManager::collectPackage(const QString& dirName, asulPackage* current
     packageIDLine->setReadOnly(true);
 
     QPushButton* packageManageBtn = new QPushButton(packageArea);
+    QPushButton* enableWithDependencies = new QPushButton(packageArea);
+    QPushButton* disableWithDependents = new QPushButton(packageArea);
+
+    enableWithDependencies->setText("on with depe");
+    disableWithDependents->setText("off with depe");
 
     // process status switch button
     connect(packageManageBtn, &QPushButton::clicked, currentPackage, [=]() {
@@ -166,11 +171,21 @@ void PackageManager::collectPackage(const QString& dirName, asulPackage* current
             packageManageBtn->setText("Off");
     });
 
+    // process other button
+    connect(enableWithDependencies, &QPushButton::clicked, currentPackage, [=]() {
+        this->packageManager.enablePackageWithDenpendencies(currentPackage->getFullID());
+    });
+    connect(disableWithDependents, &QPushButton::clicked, currentPackage, [=]() {
+        this->packageManager.disablePackageWithDenpendents(currentPackage->getFullID());
+    });
+
     // add package to packageManager
     packageManager.addPackage(currentPackage, asulPackageManager::PACKAGE_STATE::DISABLE);
 
     // add to ui
-    packageLayout->addWidget(packageIDLine, 9);
+    packageLayout->addWidget(packageIDLine, 5);
+    packageLayout->addWidget(disableWithDependents, 2);
+    packageLayout->addWidget(enableWithDependencies, 2);
     packageLayout->addWidget(packageManageBtn, 1);
 
     ui->packageListVLayout->addWidget(packageArea);
