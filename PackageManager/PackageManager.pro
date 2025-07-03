@@ -38,6 +38,9 @@ SOURCES += $$files($$PWD/src/asulPackage/*.cpp,true)
 HEADERS += $$files($$PWD/include/asulPackageManager/*.h,true)
 SOURCES += $$files($$PWD/src/asulPackageManager/*.cpp,true)
 
+HEADERS += $$files($$PWD/include/asulVirtualFilesystem/*.h,true)
+SOURCES += $$files($$PWD/src/asulVirtualFilesystem/*.cpp,true)
+
 HEADERS += $$files($$PWD/include/QStringModifier/*.h,true)
 SOURCES += $$files($$PWD/src/QStringModifier/*.cpp,true)
 
