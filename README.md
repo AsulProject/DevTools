@@ -4,7 +4,7 @@
 
 
 ##  DebugENV
-- 提供 Debug 环境，模拟成品中的 CFGs 存储地址 ``(${CS2_Install_Path}//game/csgo/cfg)`` 
+- 提供 Debug 环境，模拟成品中的 CFGs 存储地址 ``(${CS2_Install_Path}/game/csgo/cfg)`` 
 
 ## MetaDataDebugTools
 - 提供对 ``单个`` 文档的 ``data.json`` 的解析，包括数据处理位置以及 ``AsulSlot``、``AsulSignal`` 的快速 树状解析图
